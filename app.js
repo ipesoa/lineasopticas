@@ -35,8 +35,12 @@
         content: String(item.content ?? item.body ?? item.text ?? item.texto ?? ""),
         publishedAt: item.publishedAt ?? item.date ?? item.fecha ?? new Date().toISOString(),
         featured: Boolean(item.featured ?? item.destacada ?? false),
-        tags: Array.isArray(item.tags ?? item.etiquetas) ? (item.tags ?? item.etiquetas).map(String) : [],
-        hiddenTags: Array.isArray(item.hiddenTags ?? item.etiquetasOcultas) ? (item.hiddenTags ?? item.etiquetasOcultas).map(String) : []
+        tags: Array.isArray(item.tags ?? item.etiquetas)
+          ? (item.tags ?? item.etiquetas).map(String)
+          : [],
+        hiddenTags: Array.isArray(item.hiddenTags ?? item.etiquetasOcultas)
+          ? (item.hiddenTags ?? item.etiquetasOcultas).map(String)
+          : []
       }))
       .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
   };
@@ -51,7 +55,7 @@
   const paragraphs = value => escapeHtml(value)
     .split(/\n{2,}/)
     .filter(Boolean)
-    .map(p => `<p>${p.replaceAll("\n", "<br>")}</p>`)
+    .map(paragraph => `<p>${paragraph.replaceAll("\n", "<br>")}</p>`)
     .join("");
 
   const formatDate = value => new Intl.DateTimeFormat("es-ES", {
@@ -62,78 +66,150 @@
     minute: "2-digit"
   }).format(new Date(value));
 
-  const pageCount = () => Math.max(1, Math.ceil(state.visible.length / config.itemsPerPage));
+  const pageCount = () => Math.max(
+    1,
+    Math.ceil(state.visible.length / Number(config.itemsPerPage || 40))
+  );
+
+  const cleanPreviewText = value => String(value || "")
+    .replace(/\s+/g, " ")
+    .trim();
 
   const fitTitle = element => {
     element.style.fontSize = "";
-    const computed = getComputedStyle(element);
-    const max = parseFloat(computed.fontSize);
-    const min = window.innerWidth < 740 ? 24 : 28;
-    const availableWidth = element.clientWidth - 4;
+    const max = parseFloat(getComputedStyle(element).fontSize);
+    const min = 12;
+    const availableWidth = element.clientWidth - 6;
     let low = min;
     let high = max;
 
-    for (let i = 0; i < 14; i += 1) {
+    for (let iteration = 0; iteration < 15; iteration += 1) {
       const middle = (low + high) / 2;
       element.style.fontSize = `${middle}px`;
-      const fitsWidth = element.scrollWidth <= availableWidth;
-      const fitsHeight = element.scrollHeight <= element.clientHeight + 2;
-      if (fitsWidth && fitsHeight) low = middle;
-      else high = middle;
+
+      if (element.scrollWidth <= availableWidth) {
+        low = middle;
+      } else {
+        high = middle;
+      }
     }
 
     element.style.fontSize = `${Math.max(min, Math.floor(low) - 1)}px`;
   };
 
-  const syncHorizontalThumb = () => {
-    if (!horizontalScroll || window.innerWidth < 740) return;
-    const maxScroll = grid.scrollWidth - grid.clientWidth;
-    const trackWidth = horizontalTrack.clientWidth;
-    const thumbWidth = horizontalThumb.offsetWidth;
-    const travel = Math.max(0, trackWidth - thumbWidth);
-    const ratio = maxScroll > 0 ? grid.scrollLeft / maxScroll : 0;
-    horizontalThumb.style.transform = `translateX(${ratio * travel}px)`;
-    horizontalScroll.hidden = maxScroll <= 1;
+  const fitPreview = element => {
+    const completeText = cleanPreviewText(element.dataset.fullText);
+    element.textContent = completeText;
+
+    if (!completeText) return;
+
+    const styles = getComputedStyle(element);
+    const lineHeight = parseFloat(styles.lineHeight);
+    const maximumHeight = lineHeight * 8 + 1;
+    element.style.maxHeight = `${maximumHeight}px`;
+
+    if (element.scrollHeight <= maximumHeight + 1) return;
+
+    const words = completeText.split(" ");
+    let low = 0;
+    let high = words.length;
+    let best = "";
+
+    while (low <= high) {
+      const middle = Math.floor((low + high) / 2);
+      const candidate = `${words.slice(0, middle).join(" ").replace(/[\s,;:.!?—-]+$/u, "")}…`;
+      element.textContent = candidate;
+
+      if (element.scrollHeight <= maximumHeight + 1) {
+        best = candidate;
+        low = middle + 1;
+      } else {
+        high = middle - 1;
+      }
+    }
+
+    element.textContent = best || "…";
   };
 
-  const enableHorizontalDrag = () => {
+  const syncHorizontalThumb = () => {
+    if (!horizontalScroll || window.innerWidth < 740) return;
+
+    const maximumScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
+    const availableTravel = Math.max(
+      0,
+      horizontalTrack.clientWidth - horizontalThumb.offsetWidth
+    );
+    const ratio = maximumScroll > 0 ? grid.scrollLeft / maximumScroll : 0;
+
+    horizontalThumb.style.transform = `translateX(${ratio * availableTravel}px)`;
+    horizontalScroll.hidden = maximumScroll <= 1;
+  };
+
+  const enableHorizontalControls = () => {
     let dragging = false;
+    let startPointerX = 0;
+    let startScrollLeft = 0;
 
     horizontalThumb.addEventListener("pointerdown", event => {
       dragging = true;
+      startPointerX = event.clientX;
+      startScrollLeft = grid.scrollLeft;
       horizontalThumb.setPointerCapture(event.pointerId);
       event.preventDefault();
     });
 
     horizontalThumb.addEventListener("pointermove", event => {
       if (!dragging) return;
-      const rect = horizontalTrack.getBoundingClientRect();
-      const thumbWidth = horizontalThumb.offsetWidth;
-      const travel = Math.max(1, rect.width - thumbWidth);
-      const x = Math.min(Math.max(event.clientX - rect.left - thumbWidth / 2, 0), travel);
-      const maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
-      grid.scrollLeft = (x / travel) * maxScroll;
+
+      const maximumScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
+      const availableTravel = Math.max(
+        1,
+        horizontalTrack.clientWidth - horizontalThumb.offsetWidth
+      );
+      const pointerMovement = event.clientX - startPointerX;
+
+      grid.scrollLeft = startScrollLeft
+        + pointerMovement * (maximumScroll / availableTravel) * 1.65;
     });
 
-    const stop = event => {
+    const stopDragging = event => {
       dragging = false;
       if (horizontalThumb.hasPointerCapture?.(event.pointerId)) {
         horizontalThumb.releasePointerCapture(event.pointerId);
       }
     };
 
-    horizontalThumb.addEventListener("pointerup", stop);
-    horizontalThumb.addEventListener("pointercancel", stop);
+    horizontalThumb.addEventListener("pointerup", stopDragging);
+    horizontalThumb.addEventListener("pointercancel", stopDragging);
 
     horizontalTrack.addEventListener("pointerdown", event => {
       if (event.target === horizontalThumb) return;
-      const rect = horizontalTrack.getBoundingClientRect();
+
+      const bounds = horizontalTrack.getBoundingClientRect();
       const thumbWidth = horizontalThumb.offsetWidth;
-      const travel = Math.max(1, rect.width - thumbWidth);
-      const x = Math.min(Math.max(event.clientX - rect.left - thumbWidth / 2, 0), travel);
-      const maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
-      grid.scrollTo({ left: (x / travel) * maxScroll, behavior: "smooth" });
+      const availableTravel = Math.max(1, bounds.width - thumbWidth);
+      const pointerPosition = Math.min(
+        Math.max(event.clientX - bounds.left - thumbWidth / 2, 0),
+        availableTravel
+      );
+      const maximumScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
+
+      grid.scrollLeft = (pointerPosition / availableTravel) * maximumScroll;
+      syncHorizontalThumb();
     });
+
+    grid.addEventListener("wheel", event => {
+      if (window.innerWidth < 740 || grid.scrollWidth <= grid.clientWidth) return;
+
+      const movement = Math.abs(event.deltaX) > Math.abs(event.deltaY)
+        ? event.deltaX
+        : event.deltaY;
+
+      if (!movement) return;
+
+      event.preventDefault();
+      grid.scrollLeft += movement * 2.35;
+    }, { passive: false });
   };
 
   const render = () => {
@@ -144,33 +220,57 @@
       indicator.textContent = "0 / 0";
       prev.disabled = true;
       next.disabled = true;
+      horizontalScroll.hidden = true;
       return;
     }
 
     const totalPages = pageCount();
     state.page = Math.min(Math.max(state.page, 1), totalPages);
-    const start = (state.page - 1) * config.itemsPerPage;
-    const pageItems = state.visible.slice(start, start + config.itemsPerPage);
+    const start = (state.page - 1) * Number(config.itemsPerPage || 40);
+    const pageItems = state.visible.slice(
+      start,
+      start + Number(config.itemsPerPage || 40)
+    );
 
     pageItems.forEach(article => {
       const node = template.content.cloneNode(true);
       const card = node.querySelector(".article-card");
       const title = node.querySelector(".card-title");
-      const summary = node.querySelector(".card-summary");
+      const preview = node.querySelector(".card-summary");
       const date = node.querySelector(".card-date");
       const read = node.querySelector(".read-more");
 
+      const open = () => openArticle(article, true);
+
       title.textContent = article.title;
-      summary.textContent = article.summary || article.content;
+      preview.dataset.fullText = article.content || article.summary;
+      preview.textContent = article.content || article.summary;
       date.textContent = formatDate(article.publishedAt);
       date.dateTime = article.publishedAt;
-      read.addEventListener("click", () => openArticle(article, true));
+
       card.dataset.articleId = article.id;
+      card.tabIndex = 0;
+      card.setAttribute("role", "button");
+      card.setAttribute("aria-label", `Leer ${article.title}`);
+      card.addEventListener("click", open);
+      card.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          open();
+        }
+      });
+
+      read.addEventListener("click", event => {
+        event.stopPropagation();
+        open();
+      });
+
       grid.append(node);
     });
 
     requestAnimationFrame(() => {
       grid.querySelectorAll(".card-title").forEach(fitTitle);
+      grid.querySelectorAll(".card-summary").forEach(fitPreview);
       grid.scrollLeft = 0;
       syncHorizontalThumb();
     });
@@ -178,8 +278,11 @@
     indicator.textContent = `${state.page} / ${totalPages}`;
     prev.disabled = state.page <= 1;
     next.disabled = state.page >= totalPages;
-    status.textContent = state.mode === "featured" ? "DESTACADAS" : "";
-    featuredButton.setAttribute("aria-pressed", String(state.mode === "featured"));
+    status.textContent = "";
+    featuredButton.setAttribute(
+      "aria-pressed",
+      String(state.mode === "featured")
+    );
   };
 
   const canonicalArticleUrl = article => {
@@ -200,6 +303,7 @@
     modalLayer.hidden = true;
     document.body.classList.remove("modal-open");
     modalContent.replaceChildren();
+
     if (clearUrl) {
       const url = new URL(window.location.href);
       url.searchParams.delete("article");
@@ -211,47 +315,51 @@
     const shareUrl = canonicalArticleUrl(article);
     const encodedUrl = encodeURIComponent(shareUrl);
     const encodedText = encodeURIComponent(article.title);
-    const visibleTags = article.tags.length
-      ? `<div class="article-tags">${article.tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join("")}</div>`
-      : "";
+    const shareDescription = cleanPreviewText(article.content).slice(0, 180);
 
     openModal(`
       <article>
         <h1 id="modalTitle" class="article-modal-title">${escapeHtml(article.title)}</h1>
-        <div class="article-meta">
-          <time datetime="${escapeHtml(article.publishedAt)}">${formatDate(article.publishedAt)}</time>
-          <span>${escapeHtml(config.publicationName || "Líneas Ópticas")}</span>
-        </div>
         <div class="article-body">${paragraphs(article.content || article.summary)}</div>
-        ${visibleTags}
-        <section class="share-panel">
-          <h2 class="share-title">COMPARTIR</h2>
+
+        <section class="share-panel" aria-label="Compartir noticia">
           <div class="share-actions">
-            <button class="modal-button" id="nativeShare" type="button">COMPARTIR</button>
-            <button class="modal-button" id="copyLink" type="button">COPIAR LINK</button>
-            <a class="modal-button" target="_blank" rel="noopener noreferrer"
-              href="https://wa.me/?text=${encodedText}%20${encodedUrl}">WHATSAPP</a>
+            <button class="share-action" id="nativeShare" type="button">compartir</button>
+            <button class="share-action" id="copyLink" type="button">copiar link</button>
+            <a class="share-action" target="_blank" rel="noopener noreferrer"
+              href="https://wa.me/?text=${encodedText}%20${encodedUrl}">whatsapp</a>
           </div>
         </section>
       </article>
     `);
 
-    if (updateUrl) history.pushState({ article: article.slug }, "", shareUrl);
+    if (updateUrl) {
+      history.pushState({ article: article.slug }, "", shareUrl);
+    }
 
     document.querySelector("#copyLink").addEventListener("click", async event => {
       try {
         await navigator.clipboard.writeText(shareUrl);
-        event.currentTarget.textContent = "LINK COPIADO";
+        event.currentTarget.textContent = "link copiado";
       } catch {
-        window.prompt("COPIA ESTE ENLACE:", shareUrl);
+        window.prompt("Copia este enlace:", shareUrl);
       }
     });
 
-    document.querySelector("#nativeShare").addEventListener("click", async () => {
-      if (navigator.share) {
-        await navigator.share({ title: article.title, text: article.summary, url: shareUrl });
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
+    document.querySelector("#nativeShare").addEventListener("click", async event => {
+      try {
+        if (navigator.share) {
+          await navigator.share({
+            title: article.title,
+            text: shareDescription,
+            url: shareUrl
+          });
+        } else {
+          await navigator.clipboard.writeText(shareUrl);
+          event.currentTarget.textContent = "link copiado";
+        }
+      } catch (error) {
+        if (error?.name !== "AbortError") console.error(error);
       }
     });
   };
@@ -261,7 +369,9 @@
       <section>
         <h1 id="modalTitle" class="utility-title">BUSCAR</h1>
         <form class="search-form" id="searchForm">
-          <input id="searchInput" type="search" autocomplete="off" placeholder="TITULAR, TEXTO, FECHA O ETIQUETA" aria-label="Buscar noticias">
+          <input id="searchInput" type="search" autocomplete="off"
+            placeholder="TITULAR, TEXTO, FECHA O ETIQUETA"
+            aria-label="Buscar noticias">
           <button class="modal-button" type="submit">BUSCAR</button>
         </form>
         <div id="searchResults" class="result-list"></div>
@@ -274,7 +384,7 @@
     const runSearch = () => {
       const query = input.value.trim().toLocaleLowerCase("es");
       const matches = !query ? [] : state.all.filter(article => {
-        const haystack = [
+        const searchable = [
           article.title,
           article.summary,
           article.content,
@@ -282,7 +392,8 @@
           ...article.tags,
           ...article.hiddenTags
         ].join(" ").toLocaleLowerCase("es");
-        return haystack.includes(query);
+
+        return searchable.includes(query);
       });
 
       results.innerHTML = matches.length
@@ -290,8 +401,11 @@
             <button class="result-item" type="button" data-id="${escapeHtml(article.id)}">
               <strong>${escapeHtml(article.title)}</strong>
               <time>${formatDate(article.publishedAt)}</time>
-            </button>`).join("")
-        : query ? '<p>NO HAY RESULTADOS.</p>' : '<p>ESCRIBE PARA BUSCAR.</p>';
+            </button>
+          `).join("")
+        : query
+          ? "<p>NO HAY RESULTADOS.</p>"
+          : "<p>ESCRIBE PARA BUSCAR.</p>";
 
       results.querySelectorAll("[data-id]").forEach(button => {
         button.addEventListener("click", () => {
@@ -305,6 +419,7 @@
       event.preventDefault();
       runSearch();
     });
+
     input.addEventListener("input", runSearch);
     input.focus();
   };
@@ -313,6 +428,7 @@
     openModal(`
       <section class="donation-panel">
         <h1 id="modalTitle" class="utility-title">DONACIÓN</h1>
+
         <p class="donation-copy">
           La aportación es voluntaria y se destina a apoyar la continuidad de este diario y la futura
           producción de proyectos editoriales. Se realiza a título gratuito y sin contraprestación:
@@ -321,18 +437,17 @@
           artículo 618 del Código Civil y al artículo 3.1.b de la Ley 29/1987, del Impuesto sobre
           Sucesiones y Donaciones.
         </p>
+
         <div class="donation-actions">
-          <a class="modal-button" href="${escapeHtml(config.stripe.donationUrl)}" target="_blank" rel="noopener noreferrer">
-            DONAR DESDE 5 €
-          </a>
-          <a class="modal-button" href="${escapeHtml(config.stripe.monthlyUrl)}" target="_blank" rel="noopener noreferrer">
-            APOYO MENSUAL 5 €
-          </a>
+          <a class="modal-button" href="${escapeHtml(config.stripe.donationUrl)}"
+            target="_blank" rel="noopener noreferrer">DONAR DESDE 5 €</a>
+          <a class="modal-button" href="${escapeHtml(config.stripe.monthlyUrl)}"
+            target="_blank" rel="noopener noreferrer">APOYO MENSUAL 5 €</a>
         </div>
+
         <p class="stripe-note">
-          El pago se realiza de forma segura en Stripe. Líneas Ópticas no recibe ni almacena
-          los datos de la tarjeta. En la donación puntual puedes modificar el importe antes de pagar;
-          el mínimo es de 5 €.
+          El pago se realiza de forma segura a través de Stripe. Líneas Ópticas no recibe ni
+          almacena los datos de la tarjeta.
         </p>
       </section>
     `);
@@ -340,9 +455,11 @@
 
   const load = async () => {
     status.textContent = "CARGANDO...";
+
     try {
       const response = await fetch(config.apiUrl, { cache: "no-store" });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
       state.all = normalize(await response.json());
       state.visible = [...state.all];
       status.textContent = "";
@@ -350,19 +467,29 @@
 
       const slug = new URL(window.location.href).searchParams.get("article");
       if (slug) {
-        const article = state.all.find(item => item.slug === slug || item.id === slug);
+        const article = state.all.find(
+          item => item.slug === slug || item.id === slug
+        );
         if (article) openArticle(article, false);
       }
     } catch (error) {
       console.error(error);
       status.textContent = "NO SE PUDO LEER LA API.";
-      grid.innerHTML = '<div class="empty">REVISA config.js, LA URL DEL JSON Y LOS PERMISOS CORS.</div>';
+      grid.innerHTML = `
+        <div class="empty">
+          REVISA config.js, LA URL DEL JSON Y LOS PERMISOS CORS.
+        </div>
+      `;
     }
   };
 
-  document.querySelector('[data-action="search"]').addEventListener("click", openSearch);
-  document.querySelector('[data-action="donation"]').addEventListener("click", openDonation);
-  document.querySelector('[data-action="featured"]').addEventListener("click", () => {
+  document.querySelector('[data-action="search"]')
+    .addEventListener("click", openSearch);
+
+  document.querySelector('[data-action="donation"]')
+    .addEventListener("click", openDonation);
+
+  featuredButton.addEventListener("click", () => {
     state.mode = state.mode === "featured" ? "all" : "featured";
     state.visible = state.mode === "featured"
       ? state.all.filter(article => article.featured)
@@ -372,40 +499,51 @@
   });
 
   prev.addEventListener("click", () => {
-    if (state.page > 1) {
-      state.page -= 1;
-      render();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    if (state.page <= 1) return;
+    state.page -= 1;
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
   next.addEventListener("click", () => {
-    if (state.page < pageCount()) {
-      state.page += 1;
-      render();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    if (state.page >= pageCount()) return;
+    state.page += 1;
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
   modalClose.addEventListener("click", () => closeModal());
+
   modalLayer.addEventListener("click", event => {
     if (event.target === modalLayer) closeModal();
   });
+
   document.addEventListener("keydown", event => {
     if (event.key === "Escape" && !modalLayer.hidden) closeModal();
   });
+
   window.addEventListener("popstate", () => {
     const slug = new URL(window.location.href).searchParams.get("article");
-    if (!slug) return closeModal({ clearUrl: false });
-    const article = state.all.find(item => item.slug === slug || item.id === slug);
+
+    if (!slug) {
+      closeModal({ clearUrl: false });
+      return;
+    }
+
+    const article = state.all.find(
+      item => item.slug === slug || item.id === slug
+    );
     if (article) openArticle(article, false);
   });
+
   grid.addEventListener("scroll", syncHorizontalThumb, { passive: true });
+
   window.addEventListener("resize", () => {
     grid.querySelectorAll(".card-title").forEach(fitTitle);
+    grid.querySelectorAll(".card-summary").forEach(fitPreview);
     syncHorizontalThumb();
   });
 
-  enableHorizontalDrag();
+  enableHorizontalControls();
   load();
 })();

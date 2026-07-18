@@ -1,46 +1,37 @@
-LÍNEAS ÓPTICAS — INSTALACIÓN EN GITHUB PAGES
-================================================
+LÍNEAS ÓPTICAS — GITHUB PAGES
+==============================
 
-1. Descomprime el ZIP.
-2. Sube todo el contenido a la raíz del repositorio.
-3. En GitHub: Settings > Pages.
-4. Source: Deploy from a branch.
-5. Branch: main / root.
-6. Guarda y espera la publicación.
+1. Sube todo el contenido del ZIP a la raíz del repositorio.
+2. En GitHub abre Settings > Pages.
+3. Selecciona Deploy from a branch, main y /root.
+4. Guarda y espera la publicación.
 
-ARCHIVOS
---------
-index.html              Estructura de la página.
-styles.css              Diseño responsive.
-app.js                  Carga, búsqueda, destacados, popup y compartir.
-config.js               URL de la API, 40 noticias/página y enlaces Stripe.
-data/news.json          Datos de demostración.
-API_PARA_LA_IA.txt      Contrato exacto para el generador de noticias.
-.nojekyll               Evita procesamiento innecesario de Jekyll.
+ESCRITORIO
+----------
+Las noticias se desplazan horizontalmente:
+- Con la rueda del ratón cuando el cursor está sobre las noticias.
+- Con trackpad.
+- Arrastrando el punto negro de la barra inferior.
+- Pulsando directamente sobre la barra.
 
-STRIPE
-------
-Ya están configurados dos Payment Links reales de la cuenta “ipesoa”:
-- Donación libre desde 5 €, con 10 € como cantidad sugerida.
-- Apoyo mensual de 5 €.
+MÓVIL
+-----
+Las noticias se muestran en columna y se desplazan verticalmente.
 
-La página nunca contiene claves privadas; solo usa URLs públicas alojadas por Stripe.
+DATOS
+-----
+La web lee data/news.json o la URL indicada en config.js.
+Consulta API_PARA_LA_IA.txt para el formato exacto.
 
 PRUEBA LOCAL
 ------------
-No abras index.html directamente con doble clic porque fetch puede bloquear el JSON.
-Desde la carpeta ejecuta:
+Desde esta carpeta:
 
-    python -m http.server 8000
+python -m http.server 8000
 
-Después abre:
+Abre http://localhost:8000
 
-    http://localhost:8000
-
-CAMBIAR EL NOMBRE O LOS PAGOS
------------------------------
-Edita config.js.
-
-CAMBIAR LAS NOTICIAS
----------------------
-Edita data/news.json o apunta apiUrl a tu API.
+STRIPE
+------
+La web solo contiene enlaces públicos de Stripe. No contiene claves privadas y
+Líneas Ópticas no recibe ni almacena los datos completos de las tarjetas.
