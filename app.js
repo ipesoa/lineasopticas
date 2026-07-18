@@ -79,11 +79,11 @@
     element.style.fontSize = "";
     const max = parseFloat(getComputedStyle(element).fontSize);
     const min = 12;
-    const availableWidth = element.clientWidth - 6;
+    const availableWidth = element.clientWidth - 2;
     let low = min;
     let high = max;
 
-    for (let iteration = 0; iteration < 15; iteration += 1) {
+    for (let iteration = 0; iteration < 18; iteration += 1) {
       const middle = (low + high) / 2;
       element.style.fontSize = `${middle}px`;
 
@@ -94,7 +94,7 @@
       }
     }
 
-    element.style.fontSize = `${Math.max(min, Math.floor(low) - 1)}px`;
+    element.style.fontSize = `${Math.max(min, low - 0.15)}px`;
   };
 
   const fitPreview = element => {
@@ -142,7 +142,7 @@
     const ratio = maximumScroll > 0 ? grid.scrollLeft / maximumScroll : 0;
 
     horizontalThumb.style.transform = `translateX(${ratio * availableTravel}px)`;
-    horizontalScroll.hidden = maximumScroll <= 1;
+    horizontalScroll.hidden = window.innerWidth < 740;
   };
 
   const enableHorizontalControls = () => {

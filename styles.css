@@ -276,7 +276,7 @@ main {
   padding: 0;
   color: var(--ink);
   background: transparent;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 1rem;
   font-weight: 400;
   font-style: normal;
@@ -455,7 +455,7 @@ body.modal-open { overflow: hidden; }
 
   .card-title {
     margin-bottom: clamp(13px, 1.25vw, 21px);
-    font-size: clamp(2.8rem, 4.45vw, 5.55rem);
+    font-size: clamp(3.05rem, 4.9vw, 6rem);
     line-height: 1.08;
   }
 
@@ -477,7 +477,7 @@ body.modal-open { overflow: hidden; }
     padding: 5px 0 0;
   }
 
-  .horizontal-scroll[hidden] { display: none; }
+  .horizontal-scroll[hidden] { display: block; }
 
   .horizontal-track {
     position: relative;

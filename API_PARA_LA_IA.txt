@@ -1,0 +1,70 @@
+FORMATO DE NOTICIAS PARA LA IA
+==============================
+
+La IA debe enviar las noticias en UTF-8, preferentemente como JSON o JSONL.
+
+REGLAS DEL CONTENIDO
+--------------------
+- El titular debe ser corto, directo y apto para una sola línea.
+- Preferencia: entre 3 y 7 palabras.
+- Longitud aconsejada del titular: máximo 55 caracteres.
+- El artículo debe contener como mínimo 8 líneas.
+- No existe un máximo rígido, pero debe evitarse una extensión innecesaria.
+- Extensión recomendada: entre 8 y 40 líneas.
+- La portada muestra directamente el comienzo de content, nunca un resumen separado.
+- La portada recorta el artículo después de 8 líneas visuales y añade puntos suspensivos.
+- No enviar HTML.
+- Las etiquetas sirven para la búsqueda y no se muestran al lector.
+
+FORMATO RECOMENDADO
+-------------------
+{
+  "action": "add",
+  "title": "Titular corto",
+  "content": "Primera línea.\nSegunda línea.\nTercera línea.\nCuarta línea.\nQuinta línea.\nSexta línea.\nSéptima línea.\nOctava línea.",
+  "publishedAt": "2026-07-19T20:30:00+02:00",
+  "featured": false,
+  "tags": ["cultura", "política"],
+  "hiddenTags": ["sinónimo", "tema relacionado"]
+}
+
+VARIAS NOTICIAS
+---------------
+{
+  "articles": [
+    {
+      "action": "add",
+      "title": "Primer titular",
+      "content": "Artículo completo con un mínimo de 8 líneas.",
+      "publishedAt": "2026-07-19T20:30:00+02:00",
+      "featured": false,
+      "tags": ["etiqueta"],
+      "hiddenTags": ["palabra de búsqueda"]
+    }
+  ]
+}
+
+JSONL
+-----
+Una noticia por línea, sin corchetes y sin comas entre noticias:
+
+{"action":"add","title":"Titular corto","content":"Texto completo con al menos 8 líneas.","publishedAt":"2026-07-19T20:30:00+02:00","featured":false,"tags":["cultura"],"hiddenTags":[]}
+
+ACCIONES
+--------
+- Nueva noticia: "action": "add"
+- Corregir: "action": "update" e "id": "identificador-existente"
+- Eliminar: "action": "delete" e "id": "identificador-existente"
+
+No inventar un id al actualizar o eliminar.
+
+TOKEN
+-----
+Enviar el token únicamente en la cabecera:
+
+Authorization: Bearer TU_TOKEN
+
+Nunca incluir el token dentro del JSON, del artículo o de un archivo .txt.
+
+La respuesta debe contener únicamente los datos. No añadir explicaciones,
+comentarios ni bloques Markdown fuera del formato elegido.
