@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f5">
+  <meta name="description" content="Líneas Ópticas — diario independiente">
+  <title>Líneas Ópticas</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Inicio">Líneas Ópticas</a>
+
+    <nav class="main-nav" aria-label="Navegación principal">
+      <button type="button" data-action="search">BUSCAR</button>
+      <button type="button" data-action="featured">DESTACADAS</button>
+      <button type="button" data-action="donation">DONACIÓN</button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section id="status" class="status" aria-live="polite"></section>
+    <section id="newsGrid" class="news-grid" aria-label="Noticias"></section>
+
+    <nav class="pager" aria-label="Paginación">
+      <button id="prevPage" type="button" aria-label="Página anterior">&lt;</button>
+      <span id="pageIndicator" aria-live="polite"></span>
+      <button id="nextPage" type="button" aria-label="Página siguiente">&gt;</button>
+    </nav>
+  </main>
+
+  <div id="modalLayer" class="modal-layer" hidden>
+    <section id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button id="modalClose" class="modal-close" type="button" aria-label="Cerrar">×</button>
+      <div id="modalContent" class="modal-content"></div>
+    </section>
+  </div>
+
+  <template id="articleCardTemplate">
+    <article class="article-card">
+      <h2 class="card-title"></h2>
+      <p class="card-summary"></p>
+      <div class="card-footer">
+        <time class="card-date"></time>
+        <button class="read-more" type="button">seguir leyendo...</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="./config.js"></script>
+  <script src="./app.js" defer></script>
+</body>
+</html>
