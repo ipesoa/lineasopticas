@@ -18,6 +18,10 @@
   const modalContent = document.querySelector("#modalContent");
   const modalClose = document.querySelector("#modalClose");
   const template = document.querySelector("#articleCardTemplate");
+  const horizontalScroll = document.querySelector("#horizontalScroll");
+  const horizontalTrack = document.querySelector("#horizontalTrack");
+  const horizontalThumb = document.querySelector("#horizontalThumb");
+  const featuredButton = document.querySelector('[data-action="featured"]');
 
   const normalize = raw => {
     const list = Array.isArray(raw) ? raw : raw.articles || raw.news || [];
@@ -61,13 +65,75 @@
   const pageCount = () => Math.max(1, Math.ceil(state.visible.length / config.itemsPerPage));
 
   const fitTitle = element => {
-    const max = parseFloat(getComputedStyle(element).fontSize);
-    let size = max;
-    element.style.fontSize = `${size}px`;
-    while (element.scrollWidth > element.clientWidth && size > 28) {
-      size -= 1;
-      element.style.fontSize = `${size}px`;
+    element.style.fontSize = "";
+    const computed = getComputedStyle(element);
+    const max = parseFloat(computed.fontSize);
+    const min = window.innerWidth < 740 ? 24 : 28;
+    const availableWidth = element.clientWidth - 4;
+    let low = min;
+    let high = max;
+
+    for (let i = 0; i < 14; i += 1) {
+      const middle = (low + high) / 2;
+      element.style.fontSize = `${middle}px`;
+      const fitsWidth = element.scrollWidth <= availableWidth;
+      const fitsHeight = element.scrollHeight <= element.clientHeight + 2;
+      if (fitsWidth && fitsHeight) low = middle;
+      else high = middle;
     }
+
+    element.style.fontSize = `${Math.max(min, Math.floor(low) - 1)}px`;
+  };
+
+  const syncHorizontalThumb = () => {
+    if (!horizontalScroll || window.innerWidth < 740) return;
+    const maxScroll = grid.scrollWidth - grid.clientWidth;
+    const trackWidth = horizontalTrack.clientWidth;
+    const thumbWidth = horizontalThumb.offsetWidth;
+    const travel = Math.max(0, trackWidth - thumbWidth);
+    const ratio = maxScroll > 0 ? grid.scrollLeft / maxScroll : 0;
+    horizontalThumb.style.transform = `translateX(${ratio * travel}px)`;
+    horizontalScroll.hidden = maxScroll <= 1;
+  };
+
+  const enableHorizontalDrag = () => {
+    let dragging = false;
+
+    horizontalThumb.addEventListener("pointerdown", event => {
+      dragging = true;
+      horizontalThumb.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    });
+
+    horizontalThumb.addEventListener("pointermove", event => {
+      if (!dragging) return;
+      const rect = horizontalTrack.getBoundingClientRect();
+      const thumbWidth = horizontalThumb.offsetWidth;
+      const travel = Math.max(1, rect.width - thumbWidth);
+      const x = Math.min(Math.max(event.clientX - rect.left - thumbWidth / 2, 0), travel);
+      const maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
+      grid.scrollLeft = (x / travel) * maxScroll;
+    });
+
+    const stop = event => {
+      dragging = false;
+      if (horizontalThumb.hasPointerCapture?.(event.pointerId)) {
+        horizontalThumb.releasePointerCapture(event.pointerId);
+      }
+    };
+
+    horizontalThumb.addEventListener("pointerup", stop);
+    horizontalThumb.addEventListener("pointercancel", stop);
+
+    horizontalTrack.addEventListener("pointerdown", event => {
+      if (event.target === horizontalThumb) return;
+      const rect = horizontalTrack.getBoundingClientRect();
+      const thumbWidth = horizontalThumb.offsetWidth;
+      const travel = Math.max(1, rect.width - thumbWidth);
+      const x = Math.min(Math.max(event.clientX - rect.left - thumbWidth / 2, 0), travel);
+      const maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
+      grid.scrollTo({ left: (x / travel) * maxScroll, behavior: "smooth" });
+    });
   };
 
   const render = () => {
@@ -105,12 +171,15 @@
 
     requestAnimationFrame(() => {
       grid.querySelectorAll(".card-title").forEach(fitTitle);
+      grid.scrollLeft = 0;
+      syncHorizontalThumb();
     });
 
     indicator.textContent = `${state.page} / ${totalPages}`;
     prev.disabled = state.page <= 1;
     next.disabled = state.page >= totalPages;
     status.textContent = state.mode === "featured" ? "DESTACADAS" : "";
+    featuredButton.setAttribute("aria-pressed", String(state.mode === "featured"));
   };
 
   const canonicalArticleUrl = article => {
@@ -242,7 +311,7 @@
 
   const openDonation = () => {
     openModal(`
-      <section>
+      <section class="donation-panel">
         <h1 id="modalTitle" class="utility-title">DONACIÓN</h1>
         <p class="donation-copy">
           La aportación es voluntaria y se destina a apoyar la continuidad de este diario y la futura
@@ -260,6 +329,11 @@
             APOYO MENSUAL 5 €
           </a>
         </div>
+        <p class="stripe-note">
+          El pago se realiza de forma segura en Stripe. Líneas Ópticas no recibe ni almacena
+          los datos de la tarjeta. En la donación puntual puedes modificar el importe antes de pagar;
+          el mínimo es de 5 €.
+        </p>
       </section>
     `);
   };
@@ -326,9 +400,12 @@
     const article = state.all.find(item => item.slug === slug || item.id === slug);
     if (article) openArticle(article, false);
   });
+  grid.addEventListener("scroll", syncHorizontalThumb, { passive: true });
   window.addEventListener("resize", () => {
     grid.querySelectorAll(".card-title").forEach(fitTitle);
+    syncHorizontalThumb();
   });
 
+  enableHorizontalDrag();
   load();
 })();

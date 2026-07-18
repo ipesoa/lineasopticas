@@ -4,7 +4,7 @@ window.LINEAS_OPTICAS_CONFIG = {
   itemsPerPage: 40,
 
   stripe: {
-    donationUrl: "https://donate.stripe.com/6oUbJ2giTgdc8Rf5NHgfu03",
+    donationUrl: "https://donate.stripe.com/3cI4gA0jV3qq5F37VPgfu05",
     monthlyUrl: "https://buy.stripe.com/00wcN67Mn3qq2sRb81gfu04"
   },
 
