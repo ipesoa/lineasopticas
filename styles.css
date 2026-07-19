@@ -719,3 +719,31 @@ body.modal-open { overflow: hidden; }
   color: var(--ink);
   text-decoration: none;
 }
+
+/* Relacionadas: mismo lenguaje visual que las fuentes. */
+.related-articles {
+  margin-top: 42px;
+  padding-top: 18px;
+  border-top: 2px solid var(--line);
+  font-weight: 400;
+}
+
+.related-articles .related-title {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.related-articles .related-list {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.related-articles a {
+  color: inherit;
+}
+
+.related-section-link {
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+}

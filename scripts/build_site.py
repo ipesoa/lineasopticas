@@ -213,6 +213,37 @@ def image_url(config: dict, slug: str) -> str:
     return f'{config["siteUrl"]}/media/noticias/{quote(slug)}.svg'
 
 
+PNG_ENABLED = False
+
+
+def detect_png_support() -> bool:
+    """PNG para og:image (WhatsApp, X, Facebook y Discover no aceptan SVG)."""
+    if shutil.which("rsvg-convert"):
+        return True
+    try:
+        import cairosvg  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def render_png(svg_path: Path, png_path: Path) -> None:
+    if shutil.which("rsvg-convert"):
+        import subprocess
+        subprocess.run(
+            ["rsvg-convert", "-w", "1200", "-h", "1200", "-o", str(png_path), str(svg_path)],
+            check=True,
+        )
+    else:
+        import cairosvg
+        cairosvg.svg2png(url=str(svg_path), write_to=str(png_path), output_width=1200, output_height=1200)
+
+
+def social_image_url(config: dict, slug: str) -> str:
+    extension = "png" if PNG_ENABLED else "svg"
+    return f'{config["siteUrl"]}/media/noticias/{quote(slug)}.{extension}'
+
+
 def formatted_date(value: datetime) -> str:
     months = (
         "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -278,7 +309,7 @@ def article_json_ld(article: dict, config: dict) -> str:
         "mainEntityOfPage": {"@type": "WebPage", "@id": article_url(config, article["slug"])},
         "headline": article["title"],
         "description": article["metaDescription"],
-        "image": [image_url(config, article["slug"])],
+        "image": [social_image_url(config, article["slug"])],
         "datePublished": article["publishedAt"],
         "dateModified": article["updatedAt"],
         "author": {"@type": article["authorType"], "name": article["author"]},
@@ -293,10 +324,46 @@ def article_json_ld(article: dict, config: dict) -> str:
     return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
 
 
-def article_page(article: dict, config: dict) -> str:
+def breadcrumb_json_ld(article: dict, config: dict) -> str:
+    payload = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": config["publicationName"], "item": f'{config["siteUrl"]}/'},
+            {"@type": "ListItem", "position": 2, "name": article["section"],
+             "item": f'{config["siteUrl"]}/secciones/{article["sectionSlug"]}/'},
+            {"@type": "ListItem", "position": 3, "name": article["title"],
+             "item": article_url(config, article["slug"])},
+        ],
+    }
+    return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+
+
+def related_block(article: dict, related: list[dict], config: dict) -> str:
+    if not related:
+        return ""
+    links = "\n".join(
+        f'<li><a href="../{h(item["slug"])}/">{h(item["title"])}</a></li>' for item in related
+    )
+    section_link = (
+        f'<p class="related-section-link">Más en '
+        f'<a href="../../secciones/{h(article["sectionSlug"])}/">{h(article["section"])}</a>'
+        f' · <a href="../../archivo/">archivo</a></p>'
+    )
+    return f'''<nav class="related-articles" aria-label="Artículos relacionados">
+<h2 class="related-title">Seguir leyendo</h2>
+<ul class="related-list">{links}</ul>
+{section_link}
+</nav>'''
+
+
+def article_page(article: dict, config: dict, related: list[dict] | None = None) -> str:
     canonical = article_url(config, article["slug"])
-    image = image_url(config, article["slug"])
+    image = social_image_url(config, article["slug"])
+    image_type = "image/png" if PNG_ENABLED else "image/svg+xml"
     tags = "\n".join(f'<meta property="article:tag" content="{h(tag)}">' for tag in article["tags"])
+    news_keywords = ", ".join(article["tags"] + article["hiddenTags"])
+    news_keywords_meta = f'<meta name="news_keywords" content="{h(news_keywords)}">' if news_keywords else ""
     verification = (
         f'<meta name="google-site-verification" content="{h(config["googleSiteVerification"])}">'
         if config.get("googleSiteVerification") else ""
@@ -322,7 +389,7 @@ def article_page(article: dict, config: dict) -> str:
   <meta property="og:title" content="{h(article['title'])}">
   <meta property="og:description" content="{h(article['metaDescription'])}">
   <meta property="og:image" content="{h(image)}">
-  <meta property="og:image:type" content="image/svg+xml">
+  <meta property="og:image:type" content="{image_type}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="1200">
   <meta property="og:image:alt" content="Composición tipográfica de {h(article['title'])}">
@@ -330,13 +397,14 @@ def article_page(article: dict, config: dict) -> str:
   <meta property="article:modified_time" content="{h(article['updatedAt'])}">
   <meta property="article:section" content="{h(article['section'])}">
   {tags}
+  {news_keywords_meta}
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="{h(article['title'])}">
   <meta name="twitter:description" content="{h(article['metaDescription'])}">
   <meta name="twitter:image" content="{h(image)}">
   <script type="application/ld+json">{article_json_ld(article, config)}</script>
+  <script type="application/ld+json">{breadcrumb_json_ld(article, config)}</script>
   <link rel="stylesheet" href="../../styles.css">
-  <script>window.location.replace("../../?article={quote(article['slug'])}");</script>
 </head>
 <body class="article-page-body">
   <div class="modal-layer article-page-modal">
@@ -347,6 +415,7 @@ def article_page(article: dict, config: dict) -> str:
           <h1 id="articleTitle" class="article-modal-title">{h(article['title'])}</h1>
           <div class="article-body">{paragraphs(article['content'])}</div>
           {share_panel(article, f'../../media/noticias/{article["slug"]}.svg')}
+          {related_block(article, related or [], config)}
         </article>
       </div>
     </section>
@@ -414,7 +483,7 @@ def build_sitemap(articles: list[dict], config: dict) -> str:
         entries.append(
             f'<url><loc>{h(article_url(config, article["slug"]))}</loc>'
             f'<lastmod>{article["updatedDt"].isoformat()}</lastmod>'
-            f'<image:image><image:loc>{h(image_url(config, article["slug"]))}</image:loc>'
+            f'<image:image><image:loc>{h(social_image_url(config, article["slug"]))}</image:loc>'
             f'<image:title>{h(article["title"])}</image:title></image:image></url>'
         )
     return '<?xml version="1.0" encoding="UTF-8"?>\n' + (
@@ -482,6 +551,10 @@ def copy_public_source(output: Path) -> None:
 
 
 def build(output: Path) -> None:
+    global PNG_ENABLED
+    PNG_ENABLED = detect_png_support()
+    if not PNG_ENABLED:
+        print("AVISO: sin rsvg-convert ni cairosvg; og:image quedara en SVG (peor para redes/Discover)")
     global CONFIG
     CONFIG = load_json(ROOT / "site.config.json")
     CONFIG["siteUrl"] = CONFIG["siteUrl"].rstrip("/")
@@ -511,8 +584,14 @@ def build(output: Path) -> None:
     write_text(output / "index.html", replace_static_news(index_template, visible_cards))
 
     for article in articles:
-        write_text(output / "media" / "noticias" / f'{article["slug"]}.svg', build_svg(article["title"]))
-        write_text(output / "noticias" / article["slug"] / "index.html", article_page(article, CONFIG))
+        svg_path = output / "media" / "noticias" / f'{article["slug"]}.svg'
+        write_text(svg_path, build_svg(article["title"]))
+        if PNG_ENABLED:
+            render_png(svg_path, svg_path.with_suffix(".png"))
+        same_section = [a for a in articles if a["slug"] != article["slug"] and a["sectionSlug"] == article["sectionSlug"]]
+        others = [a for a in articles if a["slug"] != article["slug"] and a["sectionSlug"] != article["sectionSlug"]]
+        related = (same_section + others)[:3]
+        write_text(output / "noticias" / article["slug"] / "index.html", article_page(article, CONFIG, related))
 
     write_text(
         output / "archivo" / "index.html",
@@ -542,6 +621,10 @@ def build(output: Path) -> None:
                 "../../",
             ),
         )
+
+    index_now_key = str(CONFIG.get("indexNowKey") or "").strip()
+    if index_now_key:
+        write_text(output / f"{index_now_key}.txt", index_now_key)
 
     write_text(output / "sitemap.xml", build_sitemap(articles, CONFIG))
     write_text(output / "news-sitemap.xml", build_news_sitemap(articles, CONFIG))
