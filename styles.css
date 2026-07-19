@@ -114,11 +114,11 @@ main {
   font-size: clamp(2.8rem, 14vw, 5.5rem);
   font-weight: 900;
   line-height: 1.08;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.035em;
   text-align: right;
   white-space: nowrap;
   overflow: hidden;
-  padding: .03em .06em .14em 0;
+  padding: .03em .13em .14em .04em;
 }
 
 .card-title-text {
@@ -473,11 +473,11 @@ body.modal-open { overflow: hidden; }
     width: 100%;
     min-width: 0;
     margin-bottom: clamp(10px, 1vw, 16px);
-    padding: .02em .03em .12em 0;
+    padding: .02em .13em .12em .04em;
     overflow: hidden;
     font-size: clamp(6.4rem, 7.1vw, 8.5rem);
     line-height: 1;
-    letter-spacing: -0.075em;
+    letter-spacing: -0.04em;
   }
 
   .card-title-text {

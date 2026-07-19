@@ -82,46 +82,28 @@
     text.style.transform = "none";
 
     const maximumSize = parseFloat(getComputedStyle(container).fontSize);
-    const availableWidth = Math.max(1, container.clientWidth - 3);
-
-    if (window.innerWidth < 740) {
-      let low = 12;
-      let high = maximumSize;
-
-      for (let iteration = 0; iteration < 18; iteration += 1) {
-        const middle = (low + high) / 2;
-        text.style.fontSize = `${middle}px`;
-
-        if (text.scrollWidth <= availableWidth) low = middle;
-        else high = middle;
-      }
-
-      text.style.fontSize = `${Math.max(12, low - 0.2)}px`;
-      return;
-    }
-
-    text.style.fontSize = `${maximumSize}px`;
-    const naturalWidth = Math.max(1, text.scrollWidth);
-    const requiredScale = availableWidth / naturalWidth;
-    const minimumHorizontalScale = 0.72;
-
-    if (requiredScale >= 1) return;
-
-    if (requiredScale >= minimumHorizontalScale) {
-      text.style.transform = `scaleX(${requiredScale})`;
-      return;
-    }
-
-    const adjustedSize = maximumSize * requiredScale / minimumHorizontalScale;
-    text.style.fontSize = `${Math.max(22, adjustedSize)}px`;
-
-    const adjustedWidth = Math.max(1, text.scrollWidth);
-    const finalScale = Math.min(
+    const minimumSize = window.innerWidth < 740 ? 18 : 22;
+    const safetyMargin = window.innerWidth < 740 ? 12 : 18;
+    const availableWidth = Math.max(
       1,
-      Math.max(minimumHorizontalScale, availableWidth / adjustedWidth)
+      container.clientWidth - safetyMargin
     );
 
-    text.style.transform = `scaleX(${finalScale})`;
+    let low = minimumSize;
+    let high = maximumSize;
+
+    for (let iteration = 0; iteration < 20; iteration += 1) {
+      const middle = (low + high) / 2;
+      text.style.fontSize = `${middle}px`;
+
+      if (text.scrollWidth <= availableWidth) {
+        low = middle;
+      } else {
+        high = middle;
+      }
+    }
+
+    text.style.fontSize = `${Math.max(minimumSize, low - 0.6)}px`;
   };
 
   const fitPreview = element => {
