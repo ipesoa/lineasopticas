@@ -336,24 +336,21 @@ def article_page(article: dict, config: dict) -> str:
   <meta name="twitter:image" content="{h(image)}">
   <script type="application/ld+json">{article_json_ld(article, config)}</script>
   <link rel="stylesheet" href="../../styles.css">
+  <script>window.location.replace("../../?article={quote(article['slug'])}");</script>
 </head>
 <body class="article-page-body">
-  <header class="site-header article-site-header">
-    <a class="brand" href="../../" aria-label="Inicio">{h(config['publicationName'])}</a>
-  </header>
-  <main class="article-page">
-    <article class="article-page-content">
-      <h1 class="article-modal-title">{h(article['title'])}</h1>
-      <p class="article-byline">
-        <time datetime="{h(article['publishedAt'])}">{h(formatted_date(article['publishedDt']))}</time>
-        <span aria-hidden="true"> · </span>{h(article['author'])}
-        <span aria-hidden="true"> · </span><a href="../../secciones/{h(article['sectionSlug'])}/">{h(article['section'])}</a>
-      </p>
-      <div class="article-body">{paragraphs(article['content'])}</div>
-      {sources_html(article)}
-      {share_panel(article, f'../../media/noticias/{article["slug"]}.svg')}
-    </article>
-  </main>
+  <div class="modal-layer article-page-modal">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="articleTitle">
+      <a class="modal-close article-page-close" href="../../" aria-label="Cerrar">×</a>
+      <div class="modal-content">
+        <article>
+          <h1 id="articleTitle" class="article-modal-title">{h(article['title'])}</h1>
+          <div class="article-body">{paragraphs(article['content'])}</div>
+          {share_panel(article, f'../../media/noticias/{article["slug"]}.svg')}
+        </article>
+      </div>
+    </section>
+  </div>
   <script src="../../share.js" defer></script>
 </body>
 </html>'''

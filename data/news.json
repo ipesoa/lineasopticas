@@ -18,7 +18,16 @@
         "productividad",
         "capitalismo",
         "ocio"
-      ]
+      ],
+      "seoTitle": "Capitalizar el tiempo",
+      "metaDescription": "Cuando la eficacia se convierte en moral, pensar empieza a parecer una pérdida improductiva.",
+      "updatedAt": "2026-07-19T18:30:00+02:00",
+      "author": "Líneas Ópticas",
+      "authorType": "Organization",
+      "section": "Pensamiento",
+      "sources": [],
+      "language": "es",
+      "status": "published"
     },
     {
       "id": "soberania-sin-eleccion",
@@ -36,7 +45,16 @@
         "Rousseau",
         "oligarquía",
         "democracia"
-      ]
+      ],
+      "seoTitle": "Soberanía sin elección",
+      "metaDescription": "Una ciudadanía que solo escoge administradores, pero no interviene sobre las leyes, conserva el voto y pierde soberanía.",
+      "updatedAt": "2026-07-19T16:05:00+02:00",
+      "author": "Líneas Ópticas",
+      "authorType": "Organization",
+      "section": "Política",
+      "sources": [],
+      "language": "es",
+      "status": "published"
     },
     {
       "id": "la-calle-como-imprenta",
@@ -55,7 +73,16 @@
         "octavillas",
         "panfleto",
         "distribución"
-      ]
+      ],
+      "seoTitle": "La calle como imprenta",
+      "metaDescription": "Un papel pequeño puede operar como una interrupción física dentro del flujo automatizado de imágenes.",
+      "updatedAt": "2026-07-18T23:12:00+02:00",
+      "author": "Líneas Ópticas",
+      "authorType": "Organization",
+      "section": "Edición",
+      "sources": [],
+      "language": "es",
+      "status": "published"
     },
     {
       "id": "contra-la-novedad",
@@ -72,7 +99,16 @@
       "hiddenTags": [
         "periodismo",
         "velocidad"
-      ]
+      ],
+      "seoTitle": "Contra la novedad",
+      "metaDescription": "La actualidad no siempre describe lo nuevo; a menudo solo señala aquello que ha conseguido imponerse durante unas horas.",
+      "updatedAt": "2026-07-18T20:40:00+02:00",
+      "author": "Líneas Ópticas",
+      "authorType": "Organization",
+      "section": "Medios",
+      "sources": [],
+      "language": "es",
+      "status": "published"
     }
   ]
 }
