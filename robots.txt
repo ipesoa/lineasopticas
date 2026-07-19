@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ipesoa.github.io/lineasopticas/sitemap.xml
+Sitemap: https://ipesoa.github.io/lineasopticas/news-sitemap.xml

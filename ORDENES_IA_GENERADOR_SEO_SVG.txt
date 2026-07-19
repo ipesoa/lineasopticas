@@ -1,551 +1,266 @@
-(() => {
-  "use strict";
+LÍNEAS ÓPTICAS — CONTRATO DE PUBLICACIÓN, SEO Y GENERADOR SVG
+===============================================================
 
-  const config = window.LINEAS_OPTICAS_CONFIG || {};
-  const state = {
-    all: [],
-    visible: [],
-    page: 1,
-    mode: "all"
-  };
+OBJETIVO
+--------
+El JSON sigue siendo la única fuente de verdad. La IA envía datos estructurados
+mediante el token de GitHub. Cada push a main activa GitHub Actions, valida el
+JSON y genera automáticamente:
 
-  const grid = document.querySelector("#newsGrid");
-  const status = document.querySelector("#status");
-  const prev = document.querySelector("#prevPage");
-  const next = document.querySelector("#nextPage");
-  const indicator = document.querySelector("#pageIndicator");
-  const modalLayer = document.querySelector("#modalLayer");
-  const modalContent = document.querySelector("#modalContent");
-  const modalClose = document.querySelector("#modalClose");
-  const template = document.querySelector("#articleCardTemplate");
-  const horizontalScroll = document.querySelector("#horizontalScroll");
-  const horizontalRange = document.querySelector("#horizontalRange");
-  const featuredButton = document.querySelector('[data-action="featured"]');
+- una página HTML pública por noticia;
+- una URL limpia /noticias/slug/;
+- un SVG cuadrado ultraligero por noticia;
+- sitemap.xml;
+- news-sitemap.xml con noticias de las últimas 48 horas;
+- feed.xml RSS;
+- páginas de archivo y sección;
+- metadatos canonical, Open Graph y NewsArticle.
 
-  const normalize = raw => {
-    const list = Array.isArray(raw) ? raw : raw.articles || raw.news || [];
-    return list
-      .filter(Boolean)
-      .map((item, index) => ({
-        id: String(item.id ?? item.slug ?? `noticia-${index + 1}`),
-        slug: String(item.slug ?? item.id ?? `noticia-${index + 1}`),
-        title: String(item.title ?? item.titular ?? "Sin titular"),
-        summary: String(item.summary ?? item.excerpt ?? item.resumen ?? ""),
-        content: String(item.content ?? item.body ?? item.text ?? item.texto ?? ""),
-        publishedAt: item.publishedAt ?? item.date ?? item.fecha ?? new Date().toISOString(),
-        updatedAt: item.updatedAt ?? item.publishedAt ?? item.date ?? item.fecha ?? new Date().toISOString(),
-        author: String(item.author ?? item.autor ?? config.publicationName ?? "Líneas Ópticas"),
-        section: String(item.section ?? item.seccion ?? "Actualidad"),
-        featured: Boolean(item.featured ?? item.destacada ?? false),
-        tags: Array.isArray(item.tags ?? item.etiquetas)
-          ? (item.tags ?? item.etiquetas).map(String)
-          : [],
-        hiddenTags: Array.isArray(item.hiddenTags ?? item.etiquetasOcultas)
-          ? (item.hiddenTags ?? item.etiquetasOcultas).map(String)
-          : []
-      }))
-      .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-  };
+La IA NO debe fabricar HTML, etiquetas meta ni código SVG dentro del artículo.
+Eso lo genera scripts/build_site.py para evitar errores y duplicaciones.
 
-  const escapeHtml = value => String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+CODIFICACIÓN Y TRANSPORTE
+-------------------------
+- UTF-8.
+- Preferentemente JSON; también puede utilizarse JSONL.
+- Token únicamente en la cabecera HTTP:
 
-  const paragraphs = value => escapeHtml(value)
-    .split(/\n{2,}/)
-    .filter(Boolean)
-    .map(paragraph => `<p>${paragraph.replaceAll("\n", "<br>")}</p>`)
-    .join("");
+  Authorization: Bearer TU_TOKEN
 
-  const formatDate = value => new Intl.DateTimeFormat("es-ES", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  }).format(new Date(value));
+- Nunca colocar el token en el JSON, en el artículo, en un SVG ni en un TXT.
+- La respuesta automática debe contener solo datos válidos, sin Markdown.
 
-  const pageCount = () => Math.max(
-    1,
-    Math.ceil(state.visible.length / Number(config.itemsPerPage || 40))
-  );
+CAMPOS PARA UNA NOTICIA NUEVA
+-----------------------------
+Campos obligatorios enviados por la IA:
 
-  const cleanPreviewText = value => String(value || "")
-    .replace(/\s+/g, " ")
-    .trim();
+- action: "add"
+- title: titular editorial visible.
+- seoTitle: variante explícita para buscadores.
+- summary: resumen informativo de una o dos frases.
+- metaDescription: descripción de buscador.
+- content: artículo completo en texto plano.
+- publishedAt: fecha ISO 8601 con zona horaria.
+- updatedAt: inicialmente igual a publishedAt.
+- author: firma visible.
+- authorType: "Person" u "Organization".
+- section: sección editorial principal.
+- featured: true o false.
+- tags: etiquetas temáticas visibles para clasificación interna.
+- hiddenTags: sinónimos, entidades y búsquedas relacionadas.
+- sources: lista de fuentes consultadas.
+- language: "es".
+- status: "published".
 
-  const fitTitle = container => {
-    const text = container.querySelector(".card-title-text");
-    if (!text) return;
+El sistema receptor debe crear id y slug estables al ejecutar action "add".
+No deben cambiarse al corregir una noticia porque forman parte de su URL.
 
-    text.style.fontSize = "";
-    text.style.transform = "none";
-
-    const maximumSize = parseFloat(getComputedStyle(container).fontSize);
-    const minimumSize = window.innerWidth < 740 ? 18 : 22;
-    const safetyMargin = window.innerWidth < 740 ? 12 : 18;
-    const availableWidth = Math.max(
-      1,
-      container.clientWidth - safetyMargin
-    );
-
-    let low = minimumSize;
-    let high = maximumSize;
-
-    for (let iteration = 0; iteration < 20; iteration += 1) {
-      const middle = (low + high) / 2;
-      text.style.fontSize = `${middle}px`;
-
-      if (text.scrollWidth <= availableWidth) {
-        low = middle;
-      } else {
-        high = middle;
-      }
+FORMATO RECOMENDADO
+-------------------
+{
+  "action": "add",
+  "title": "Dos días después del huracán",
+  "seoTitle": "Qué ocurre dos días después del huracán",
+  "summary": "Balance de daños, respuesta institucional y situación de las personas afectadas.",
+  "metaDescription": "Daños, respuesta institucional y situación de la población dos días después del huracán.",
+  "content": "Primer párrafo.\n\nSegundo párrafo.\n\nTercer párrafo.\n\nCuarto párrafo.",
+  "publishedAt": "2026-07-19T20:30:00+02:00",
+  "updatedAt": "2026-07-19T20:30:00+02:00",
+  "author": "Líneas Ópticas",
+  "authorType": "Organization",
+  "section": "Actualidad",
+  "featured": false,
+  "tags": ["huracán", "emergencias", "clima"],
+  "hiddenTags": ["daños", "evacuaciones", "respuesta institucional"],
+  "sources": [
+    {
+      "name": "Nombre de la fuente",
+      "url": "https://ejemplo.org/documento"
     }
-
-    text.style.fontSize = `${Math.max(minimumSize, low - 0.6)}px`;
-  };
-
-  const fitPreview = element => {
-    const completeText = cleanPreviewText(element.dataset.fullText);
-    element.textContent = completeText;
-
-    if (!completeText) return;
-
-    const styles = getComputedStyle(element);
-    const lineHeight = parseFloat(styles.lineHeight);
-    const maximumHeight = lineHeight * 8 + 1;
-    element.style.maxHeight = `${maximumHeight}px`;
-
-    if (element.scrollHeight <= maximumHeight + 1) return;
-
-    const words = completeText.split(" ");
-    let low = 0;
-    let high = words.length;
-    let best = "";
-
-    while (low <= high) {
-      const middle = Math.floor((low + high) / 2);
-      const candidate = `${words.slice(0, middle).join(" ").replace(/[\s,;:.!?—-]+$/u, "")}…`;
-      element.textContent = candidate;
-
-      if (element.scrollHeight <= maximumHeight + 1) {
-        best = candidate;
-        low = middle + 1;
-      } else {
-        high = middle - 1;
-      }
-    }
-
-    element.textContent = best || "…";
-  };
-
-  const syncHorizontalControl = () => {
-    if (!horizontalRange || window.innerWidth < 740) return;
-
-    const maximumScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
-    const ratio = maximumScroll > 0 ? grid.scrollLeft / maximumScroll : 0;
-
-    horizontalRange.value = String(Math.round(ratio * 1000));
-    horizontalRange.disabled = false;
-  };
-
-  const enableHorizontalControls = () => {
-    horizontalRange.addEventListener("input", () => {
-      const maximumScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
-      grid.scrollLeft = (Number(horizontalRange.value) / 1000) * maximumScroll;
-    });
-
-    grid.addEventListener("wheel", event => {
-      if (window.innerWidth < 740 || grid.scrollWidth <= grid.clientWidth) return;
-
-      const movement = Math.abs(event.deltaX) > Math.abs(event.deltaY)
-        ? event.deltaX
-        : event.deltaY;
-
-      if (!movement) return;
-
-      event.preventDefault();
-      grid.scrollLeft += movement * 2.8;
-    }, { passive: false });
-  };
-
-  const render = () => {
-    grid.replaceChildren();
-
-    if (!state.visible.length) {
-      grid.innerHTML = '<div class="empty">NO HAY NOTICIAS.</div>';
-      indicator.textContent = "0 / 0";
-      prev.disabled = true;
-      next.disabled = true;
-      horizontalScroll.hidden = true;
-      return;
-    }
-
-    horizontalScroll.hidden = false;
-
-    const totalPages = pageCount();
-    state.page = Math.min(Math.max(state.page, 1), totalPages);
-    const start = (state.page - 1) * Number(config.itemsPerPage || 40);
-    const pageItems = state.visible.slice(
-      start,
-      start + Number(config.itemsPerPage || 40)
-    );
-
-    pageItems.forEach(article => {
-      const node = template.content.cloneNode(true);
-      const card = node.querySelector(".article-card");
-      const title = node.querySelector(".card-title");
-      const titleText = node.querySelector(".card-title-text");
-      const preview = node.querySelector(".card-summary");
-      const date = node.querySelector(".card-date");
-      const read = node.querySelector(".read-more");
-
-      const open = event => {
-        if (event && (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
-        event?.preventDefault();
-        openArticle(article, true);
-      };
-
-      titleText.textContent = article.title;
-      preview.dataset.fullText = article.content || article.summary;
-      preview.textContent = article.content || article.summary;
-      date.textContent = formatDate(article.publishedAt);
-      date.dateTime = article.publishedAt;
-
-      card.dataset.articleId = article.id;
-      card.href = canonicalArticleUrl(article);
-      card.setAttribute("aria-label", `Leer ${article.title}`);
-      card.addEventListener("click", open);
-      read.setAttribute("aria-hidden", "true");
-
-      grid.append(node);
-    });
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        grid.querySelectorAll(".card-title").forEach(fitTitle);
-        grid.querySelectorAll(".card-summary").forEach(fitPreview);
-        grid.scrollLeft = 0;
-        syncHorizontalControl();
-      });
-    });
-
-    indicator.textContent = `${state.page} / ${totalPages}`;
-    prev.disabled = state.page <= 1;
-    next.disabled = state.page >= totalPages;
-    status.textContent = "";
-    featuredButton.setAttribute(
-      "aria-pressed",
-      String(state.mode === "featured")
-    );
-  };
-
-  const siteRoot = () => `${String(config.siteUrl || new URL(".", window.location.href)).replace(/\/$/, "")}/`;
-
-  const canonicalArticleUrl = article =>
-    `${siteRoot()}${String(config.articlePath || "noticias").replace(/^\/+|\/+$/g, "")}/${encodeURIComponent(article.slug)}/`;
-
-  const articleImageUrl = article =>
-    `${siteRoot()}${String(config.imagePath || "media/noticias").replace(/^\/+|\/+$/g, "")}/${encodeURIComponent(article.slug)}.svg`;
-
-  const sameOriginHistoryUrl = targetUrl => {
-    const target = new URL(targetUrl, window.location.href);
-    if (target.origin === window.location.origin) return target.toString();
-
-    const local = new URL(window.location.href);
-    local.search = "";
-    local.hash = "";
-    return local.toString();
-  };
-
-  const slugFromLocation = () => {
-    const url = new URL(window.location.href);
-    const querySlug = url.searchParams.get("article");
-    if (querySlug) return querySlug;
-
-    try {
-      const rootPath = new URL(siteRoot()).pathname.replace(/\/$/, "");
-      const relative = url.pathname.startsWith(rootPath)
-        ? url.pathname.slice(rootPath.length)
-        : url.pathname;
-      const match = relative.match(/^\/?noticias\/([^/]+)\/?$/);
-      return match ? decodeURIComponent(match[1]) : null;
-    } catch {
-      return null;
-    }
-  };
-
-  const openModal = html => {
-    modalContent.innerHTML = html;
-    modalLayer.hidden = false;
-    document.body.classList.add("modal-open");
-    modalContent.scrollTop = 0;
-    modalClose.focus();
-  };
-
-  const closeModal = ({ clearUrl = true } = {}) => {
-    modalLayer.hidden = true;
-    document.body.classList.remove("modal-open");
-    modalContent.replaceChildren();
-
-    if (clearUrl) {
-      history.replaceState({}, "", sameOriginHistoryUrl(siteRoot()));
-    }
-  };
-
-  const openArticle = (article, updateUrl = false) => {
-    const shareUrl = canonicalArticleUrl(article);
-    const imageUrl = articleImageUrl(article);
-    const shareDescription = cleanPreviewText(article.content).slice(0, 180);
-
-    openModal(`
-      <article>
-        <h1 id="modalTitle" class="article-modal-title">${escapeHtml(article.title)}</h1>
-        <div class="article-body">${paragraphs(article.content || article.summary)}</div>
-
-        <section class="share-panel" aria-label="Compartir noticia">
-          <div class="share-actions">
-            <button class="share-action" id="nativeShare" type="button">compartir</button>
-            <button class="share-image-button" id="imageShare" type="button" aria-label="Compartir ${escapeHtml(article.title)}">
-              <img class="share-image" src="${escapeHtml(imageUrl)}" width="1200" height="1200"
-                alt="Composición tipográfica del titular ${escapeHtml(article.title)}">
-            </button>
-            <button class="share-action" id="copyLink" type="button">copiar link</button>
-          </div>
-        </section>
-      </article>
-    `);
-
-    if (updateUrl) {
-      const target = new URL(shareUrl);
-      const historyUrl = target.origin === window.location.origin
-        ? shareUrl
-        : `${sameOriginHistoryUrl(siteRoot())}?article=${encodeURIComponent(article.slug)}`;
-      history.pushState({ article: article.slug }, "", historyUrl);
-    }
-
-    const copyButton = document.querySelector("#copyLink");
-    const shareButtons = [
-      document.querySelector("#nativeShare"),
-      document.querySelector("#imageShare")
-    ];
-
-    const copyLink = async button => {
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        const previous = button.textContent;
-        button.textContent = "link copiado";
-        window.setTimeout(() => { button.textContent = previous; }, 1800);
-      } catch {
-        window.prompt("Copia este enlace:", shareUrl);
-      }
-    };
-
-    copyButton.addEventListener("click", () => copyLink(copyButton));
-
-    shareButtons.forEach(button => button.addEventListener("click", async () => {
-      try {
-        if (navigator.share) {
-          await navigator.share({
-            title: article.title,
-            text: shareDescription,
-            url: shareUrl
-          });
-        } else {
-          await copyLink(document.querySelector("#nativeShare"));
-        }
-      } catch (error) {
-        if (error?.name !== "AbortError") console.error(error);
-      }
-    }));
-  };
-
-  const openSearch = () => {
-    openModal(`
-      <section>
-        <h1 id="modalTitle" class="utility-title">BUSCAR</h1>
-        <form class="search-form" id="searchForm">
-          <input id="searchInput" type="search" autocomplete="off"
-            placeholder="TITULAR, TEXTO, FECHA O ETIQUETA"
-            aria-label="Buscar noticias">
-          <button class="modal-button" type="submit">BUSCAR</button>
-        </form>
-        <div id="searchResults" class="result-list"></div>
-      </section>
-    `);
-
-    const input = document.querySelector("#searchInput");
-    const results = document.querySelector("#searchResults");
-
-    const runSearch = () => {
-      const query = input.value.trim().toLocaleLowerCase("es");
-      const matches = !query ? [] : state.all.filter(article => {
-        const searchable = [
-          article.title,
-          article.summary,
-          article.content,
-          formatDate(article.publishedAt),
-          ...article.tags,
-          ...article.hiddenTags
-        ].join(" ").toLocaleLowerCase("es");
-
-        return searchable.includes(query);
-      });
-
-      results.innerHTML = matches.length
-        ? matches.map(article => `
-            <a class="result-item" href="${escapeHtml(canonicalArticleUrl(article))}" data-id="${escapeHtml(article.id)}">
-              <strong>${escapeHtml(article.title)}</strong>
-              <time>${formatDate(article.publishedAt)}</time>
-            </a>
-          `).join("")
-        : query
-          ? "<p>NO HAY RESULTADOS.</p>"
-          : "<p>ESCRIBE PARA BUSCAR.</p>";
-
-      results.querySelectorAll("[data-id]").forEach(link => {
-        link.addEventListener("click", event => {
-          if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-          event.preventDefault();
-          const article = state.all.find(item => item.id === link.dataset.id);
-          if (article) openArticle(article, true);
-        });
-      });
-    };
-
-    document.querySelector("#searchForm").addEventListener("submit", event => {
-      event.preventDefault();
-      runSearch();
-    });
-
-    input.addEventListener("input", runSearch);
-    input.focus();
-  };
-
-  const openDonation = () => {
-    openModal(`
-      <section class="donation-panel">
-        <h1 id="modalTitle" class="utility-title">DONACIÓN</h1>
-
-        <p class="donation-copy">
-          La aportación es voluntaria y se destina a apoyar la continuidad de este diario y la futura
-          producción de proyectos editoriales. Se realiza a título gratuito y sin contraprestación:
-          no constituye una compra, preventa o reserva, ni otorga derecho a recibir un ejemplar,
-          devolución, descuento u otra prestación. Se formula conforme al concepto de donación del
-          artículo 618 del Código Civil y al artículo 3.1.b de la Ley 29/1987, del Impuesto sobre
-          Sucesiones y Donaciones.
-        </p>
-
-        <div class="donation-actions">
-          <a class="modal-button" href="${escapeHtml(config.stripe.donationUrl)}"
-            target="_blank" rel="noopener noreferrer">DONAR DESDE 5 €</a>
-          <a class="modal-button" href="${escapeHtml(config.stripe.monthlyUrl)}"
-            target="_blank" rel="noopener noreferrer">APOYO MENSUAL 5 €</a>
-        </div>
-
-        <p class="stripe-note">
-          El pago se realiza de forma segura a través de Stripe. Líneas Ópticas no recibe ni
-          almacena los datos de la tarjeta.
-        </p>
-      </section>
-    `);
-  };
-
-  const load = async () => {
-    status.textContent = "CARGANDO...";
-
-    try {
-      const response = await fetch(config.apiUrl, { cache: "no-store" });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-      state.all = normalize(await response.json());
-      state.visible = [...state.all];
-      status.textContent = "";
-      render();
-
-      const slug = slugFromLocation();
-      if (slug) {
-        const article = state.all.find(
-          item => item.slug === slug || item.id === slug
-        );
-        if (article) openArticle(article, false);
-      }
-    } catch (error) {
-      console.error(error);
-      status.textContent = "NO SE PUDO LEER LA API.";
-      grid.innerHTML = `
-        <div class="empty">
-          REVISA config.js, LA URL DEL JSON Y LOS PERMISOS CORS.
-        </div>
-      `;
-    }
-  };
-
-  document.querySelector('[data-action="search"]')
-    .addEventListener("click", openSearch);
-
-  document.querySelector('[data-action="donation"]')
-    .addEventListener("click", openDonation);
-
-  featuredButton.addEventListener("click", () => {
-    state.mode = state.mode === "featured" ? "all" : "featured";
-    state.visible = state.mode === "featured"
-      ? state.all.filter(article => article.featured)
-      : [...state.all];
-    state.page = 1;
-    render();
-  });
-
-  prev.addEventListener("click", () => {
-    if (state.page <= 1) return;
-    state.page -= 1;
-    render();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-
-  next.addEventListener("click", () => {
-    if (state.page >= pageCount()) return;
-    state.page += 1;
-    render();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-
-  modalClose.addEventListener("click", () => closeModal());
-
-  modalLayer.addEventListener("click", event => {
-    if (event.target === modalLayer) closeModal();
-  });
-
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && !modalLayer.hidden) closeModal();
-  });
-
-  window.addEventListener("popstate", () => {
-    const slug = slugFromLocation();
-
-    if (!slug) {
-      closeModal({ clearUrl: false });
-      return;
-    }
-
-    const article = state.all.find(
-      item => item.slug === slug || item.id === slug
-    );
-    if (article) openArticle(article, false);
-  });
-
-  grid.addEventListener("scroll", syncHorizontalControl, { passive: true });
-
-  window.addEventListener("resize", () => {
-    grid.querySelectorAll(".card-title").forEach(fitTitle);
-    grid.querySelectorAll(".card-summary").forEach(fitPreview);
-    syncHorizontalControl();
-  });
-
-  enableHorizontalControls();
-  load();
-})();
+  ],
+  "language": "es",
+  "status": "published"
+}
+
+REGLAS EDITORIALES Y DE POSICIONAMIENTO
+---------------------------------------
+TITLE
+- Titular visible, editorial y legible.
+- Preferencia: 3 a 10 palabras.
+- Evitar titulares vagos que no indiquen el acontecimiento o la idea central.
+- No copiar literalmente el titular de otra publicación.
+
+SEOTITLE
+- Entre 40 y 70 caracteres cuando sea posible.
+- Debe contener la entidad, hecho o pregunta que una persona buscaría.
+- Puede ser más explícito que title, pero no debe ser clickbait.
+- No añadir "Líneas Ópticas": el compilador añade el nombre cuando corresponde.
+
+SUMMARY
+- Entre 110 y 220 caracteres.
+- Debe explicar qué ha ocurrido y por qué importa.
+- No repetir literalmente el primer párrafo.
+
+METADESCRIPTION
+- Aproximadamente 120 a 160 caracteres.
+- Informativa, concreta y diferente entre noticias.
+- Sin listas de palabras clave ni llamadas publicitarias.
+
+CONTENT
+- Texto plano; no enviar HTML.
+- Separar párrafos mediante dos saltos de línea: \n\n.
+- Abrir con información concreta; después aportar contexto, contradicción y el
+  ángulo propio de Líneas Ópticas.
+- Evitar reescribir una única fuente. Contrastar varias cuando el tema lo exija.
+- No inventar cifras, citas, nombres, ubicaciones o fechas.
+- Cuando un dato no esté confirmado, explicitar la incertidumbre.
+- Una actualización sustancial debe modificar updatedAt y conservar id y slug.
+
+SOURCES
+- Cada elemento debe contener name y una URL pública HTTPS.
+- Preferir fuentes primarias: documentos oficiales, declaraciones completas,
+  datos originales, investigaciones o la publicación que originó la información.
+- Las fuentes aparecen enlazadas en la página individual.
+
+TAGS Y HIDDENTAGS
+- tags: conceptos principales; no más de 8 normalmente.
+- hiddenTags: nombres alternativos, siglas, lugares, personas y frases de búsqueda.
+- No introducir etiquetas no relacionadas solo para atraer tráfico.
+
+ACCIONES
+--------
+Nueva noticia:
+{
+  "action": "add",
+  ...campos de la noticia...
+}
+
+Actualizar una noticia existente:
+{
+  "action": "update",
+  "id": "identificador-existente",
+  "updatedAt": "2026-07-19T22:15:00+02:00",
+  ...solo campos que cambian o el registro completo, según acepte el receptor...
+}
+
+Eliminar:
+{
+  "action": "delete",
+  "id": "identificador-existente"
+}
+
+No inventar id para update o delete.
+
+VARIAS NOTICIAS
+---------------
+{
+  "articles": [
+    { "action": "add", "title": "...", "content": "..." },
+    { "action": "add", "title": "...", "content": "..." }
+  ]
+}
+
+JSONL
+-----
+Una noticia por línea. No usar corchetes ni comas entre líneas.
+
+GENERADOR SVG — TITLE GRID V1
+=============================
+
+FUNCIÓN
+-------
+Crear una identidad cuadrada distinta para cada noticia usando únicamente el
+titular. El SVG se muestra pequeño entre COMPARTIR y COPIAR LINK. Al pulsarlo,
+abre la misma acción nativa de compartir; nunca descarga el archivo.
+
+ENTRADA DEL PLUGIN
+------------------
+{
+  "title": "Dos días después del huracán",
+  "slug": "dos-dias-despues-del-huracan"
+}
+
+SALIDA DEL PLUGIN
+-----------------
+- Archivo: media/noticias/dos-dias-despues-del-huracan.svg
+- MIME: image/svg+xml
+- Dimensiones declaradas: 1200 x 1200.
+- Fondo: #f7f7f5.
+- Texto: #2d2d2b.
+- Fuente CSS: Arial, Helvetica, sans-serif.
+- font-weight: 700.
+- font-style: italic.
+- Sin descarga asociada.
+
+ALGORITMO EXACTO
+----------------
+1. Normalizar title a Unicode NFC.
+2. Convertirlo a minúsculas.
+3. Eliminar espacios, signos y símbolos.
+4. Conservar letras, tildes, ñ y números.
+
+   "Dos días después del huracán"
+   -> "dosdíasdespuésdelhuracán"
+
+5. Contar los caracteres Unicode resultantes.
+6. Dividirlos secuencialmente en tres grupos tan iguales como sea posible.
+7. Si sobran caracteres, asignar uno primero a la línea 1 y después a la línea 2.
+8. No buscar cortes semánticos y no modificar el orden del titular.
+9. Dibujar las tres líneas en un bloque de 960 x aproximadamente 840 unidades,
+   centrado dentro del lienzo 1200 x 1200.
+10. Usar estas posiciones:
+
+    línea 1: x=120, y=370
+    línea 2: x=120, y=650
+    línea 3: x=120, y=930
+
+11. Cada línea utiliza textLength=960 y lengthAdjust="spacingAndGlyphs" para
+    formar un bloque tipográfico cuadrado y compacto.
+12. Usar font-size=300, Arial Bold Italic.
+13. Escapar &, < y > como XML.
+14. Minificar el resultado a una sola línea.
+
+PLANTILLA SVG
+-------------
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200"><rect width="1200" height="1200" fill="#f7f7f5"/><g fill="#2d2d2b" font-family="Arial,Helvetica,sans-serif" font-size="300" font-weight="700" font-style="italic"><text x="120" y="370" textLength="960" lengthAdjust="spacingAndGlyphs">LINEA1</text><text x="120" y="650" textLength="960" lengthAdjust="spacingAndGlyphs">LINEA2</text><text x="120" y="930" textLength="960" lengthAdjust="spacingAndGlyphs">LINEA3</text></g></svg>
+
+PROHIBIDO EN EL SVG
+-------------------
+- <metadata>, comentarios, RDF, EXIF o datos del programa creador.
+- Fuentes incrustadas, base64, imágenes raster o filtros.
+- Paths que conviertan las letras en curvas.
+- JavaScript, enlaces, animaciones o elementos externos.
+- Identificadores, clases o grupos innecesarios.
+- XML generado por Illustrator/Inkscape con cabeceras y namespaces extra.
+
+PESO
+----
+El objetivo normal es inferior a 1 KiB por SVG. La dimensión 1200 x 1200 no
+incrementa significativamente el peso porque el archivo contiene texto y formas,
+no 1.440.000 píxeles almacenados.
+
+INTEGRACIÓN
+-----------
+El compilador incluido ya implementa TITLE GRID V1. El plugin del rack debe usar
+el mismo algoritmo para que la previsualización local y la publicación sean
+idénticas. Aunque el plugin no se ejecute, GitHub Actions regenerará el SVG desde
+title al publicar.
+
+La página HTML utiliza el SVG en:
+- el bloque visual COMPARTIR / SVG / COPIAR LINK;
+- og:image;
+- twitter:image;
+- NewsArticle.image;
+- sitemap.xml como imagen asociada.
+
+VALIDACIÓN AUTOMÁTICA
+---------------------
+La publicación falla deliberadamente si encuentra:
+- JSON inválido;
+- id o slug duplicados;
+- slug con mayúsculas, espacios o caracteres no permitidos;
+- fechas sin zona horaria;
+- noticia sin title o content;
+- URL de fuente inválida.
+
+Esto impide que una ejecución automática rompa toda la web.

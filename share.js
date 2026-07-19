@@ -1,14 +1,42 @@
-LÍNEAS ÓPTICAS — API PARA LA IA
-================================
+(() => {
+  "use strict";
 
-El contrato vigente está documentado en:
-ORDENES_IA_GENERADOR_SEO_SVG.txt
+  const copyUrl = async (button, url) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      const previous = button.textContent;
+      button.textContent = "link copiado";
+      window.setTimeout(() => { button.textContent = previous; }, 1800);
+    } catch {
+      window.prompt("Copia este enlace:", url);
+    }
+  };
 
-Resumen:
-- La IA envía únicamente JSON o JSONL UTF-8.
-- El token va solo en Authorization: Bearer TU_TOKEN.
-- No enviar HTML ni SVG dentro de content.
-- Para altas se requieren title, seoTitle, summary, metaDescription, content,
-  publishedAt, updatedAt, author, authorType, section, featured, tags,
-  hiddenTags, sources, language y status.
-- GitHub Actions crea páginas HTML, sitemap, RSS y SVG automáticamente.
+  const share = async (button, panel) => {
+    const data = {
+      title: panel.dataset.shareTitle || document.title,
+      text: panel.dataset.shareText || "",
+      url: panel.dataset.shareUrl || window.location.href
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(data);
+      } else {
+        await copyUrl(button, data.url);
+      }
+    } catch (error) {
+      if (error?.name !== "AbortError") console.error(error);
+    }
+  };
+
+  document.querySelectorAll("[data-share-panel]").forEach(panel => {
+    panel.querySelectorAll("[data-share]").forEach(button => {
+      button.addEventListener("click", () => share(button, panel));
+    });
+
+    panel.querySelectorAll("[data-copy]").forEach(button => {
+      button.addEventListener("click", () => copyUrl(button, panel.dataset.shareUrl || window.location.href));
+    });
+  });
+})();

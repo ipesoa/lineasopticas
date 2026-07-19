@@ -1,266 +1,703 @@
-LÍNEAS ÓPTICAS — CONTRATO DE PUBLICACIÓN, SEO Y GENERADOR SVG
-===============================================================
-
-OBJETIVO
---------
-El JSON sigue siendo la única fuente de verdad. La IA envía datos estructurados
-mediante el token de GitHub. Cada push a main activa GitHub Actions, valida el
-JSON y genera automáticamente:
-
-- una página HTML pública por noticia;
-- una URL limpia /noticias/slug/;
-- un SVG cuadrado ultraligero por noticia;
-- sitemap.xml;
-- news-sitemap.xml con noticias de las últimas 48 horas;
-- feed.xml RSS;
-- páginas de archivo y sección;
-- metadatos canonical, Open Graph y NewsArticle.
-
-La IA NO debe fabricar HTML, etiquetas meta ni código SVG dentro del artículo.
-Eso lo genera scripts/build_site.py para evitar errores y duplicaciones.
-
-CODIFICACIÓN Y TRANSPORTE
--------------------------
-- UTF-8.
-- Preferentemente JSON; también puede utilizarse JSONL.
-- Token únicamente en la cabecera HTTP:
-
-  Authorization: Bearer TU_TOKEN
-
-- Nunca colocar el token en el JSON, en el artículo, en un SVG ni en un TXT.
-- La respuesta automática debe contener solo datos válidos, sin Markdown.
-
-CAMPOS PARA UNA NOTICIA NUEVA
------------------------------
-Campos obligatorios enviados por la IA:
-
-- action: "add"
-- title: titular editorial visible.
-- seoTitle: variante explícita para buscadores.
-- summary: resumen informativo de una o dos frases.
-- metaDescription: descripción de buscador.
-- content: artículo completo en texto plano.
-- publishedAt: fecha ISO 8601 con zona horaria.
-- updatedAt: inicialmente igual a publishedAt.
-- author: firma visible.
-- authorType: "Person" u "Organization".
-- section: sección editorial principal.
-- featured: true o false.
-- tags: etiquetas temáticas visibles para clasificación interna.
-- hiddenTags: sinónimos, entidades y búsquedas relacionadas.
-- sources: lista de fuentes consultadas.
-- language: "es".
-- status: "published".
-
-El sistema receptor debe crear id y slug estables al ejecutar action "add".
-No deben cambiarse al corregir una noticia porque forman parte de su URL.
-
-FORMATO RECOMENDADO
--------------------
-{
-  "action": "add",
-  "title": "Dos días después del huracán",
-  "seoTitle": "Qué ocurre dos días después del huracán",
-  "summary": "Balance de daños, respuesta institucional y situación de las personas afectadas.",
-  "metaDescription": "Daños, respuesta institucional y situación de la población dos días después del huracán.",
-  "content": "Primer párrafo.\n\nSegundo párrafo.\n\nTercer párrafo.\n\nCuarto párrafo.",
-  "publishedAt": "2026-07-19T20:30:00+02:00",
-  "updatedAt": "2026-07-19T20:30:00+02:00",
-  "author": "Líneas Ópticas",
-  "authorType": "Organization",
-  "section": "Actualidad",
-  "featured": false,
-  "tags": ["huracán", "emergencias", "clima"],
-  "hiddenTags": ["daños", "evacuaciones", "respuesta institucional"],
-  "sources": [
-    {
-      "name": "Nombre de la fuente",
-      "url": "https://ejemplo.org/documento"
-    }
-  ],
-  "language": "es",
-  "status": "published"
+:root {
+  --paper: #f7f7f5;
+  --ink: #2d2d2b;
+  --line: #111;
+  --max: 1880px;
+  --gap: clamp(16px, 1.5vw, 25px);
 }
 
-REGLAS EDITORIALES Y DE POSICIONAMIENTO
----------------------------------------
-TITLE
-- Titular visible, editorial y legible.
-- Preferencia: 3 a 10 palabras.
-- Evitar titulares vagos que no indiquen el acontecimiento o la idea central.
-- No copiar literalmente el titular de otra publicación.
+* { box-sizing: border-box; }
 
-SEOTITLE
-- Entre 40 y 70 caracteres cuando sea posible.
-- Debe contener la entidad, hecho o pregunta que una persona buscaría.
-- Puede ser más explícito que title, pero no debe ser clickbait.
-- No añadir "Líneas Ópticas": el compilador añade el nombre cuando corresponde.
-
-SUMMARY
-- Entre 110 y 220 caracteres.
-- Debe explicar qué ha ocurrido y por qué importa.
-- No repetir literalmente el primer párrafo.
-
-METADESCRIPTION
-- Aproximadamente 120 a 160 caracteres.
-- Informativa, concreta y diferente entre noticias.
-- Sin listas de palabras clave ni llamadas publicitarias.
-
-CONTENT
-- Texto plano; no enviar HTML.
-- Separar párrafos mediante dos saltos de línea: \n\n.
-- Abrir con información concreta; después aportar contexto, contradicción y el
-  ángulo propio de Líneas Ópticas.
-- Evitar reescribir una única fuente. Contrastar varias cuando el tema lo exija.
-- No inventar cifras, citas, nombres, ubicaciones o fechas.
-- Cuando un dato no esté confirmado, explicitar la incertidumbre.
-- Una actualización sustancial debe modificar updatedAt y conservar id y slug.
-
-SOURCES
-- Cada elemento debe contener name y una URL pública HTTPS.
-- Preferir fuentes primarias: documentos oficiales, declaraciones completas,
-  datos originales, investigaciones o la publicación que originó la información.
-- Las fuentes aparecen enlazadas en la página individual.
-
-TAGS Y HIDDENTAGS
-- tags: conceptos principales; no más de 8 normalmente.
-- hiddenTags: nombres alternativos, siglas, lugares, personas y frases de búsqueda.
-- No introducir etiquetas no relacionadas solo para atraer tráfico.
-
-ACCIONES
---------
-Nueva noticia:
-{
-  "action": "add",
-  ...campos de la noticia...
+html {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
 }
 
-Actualizar una noticia existente:
-{
-  "action": "update",
-  "id": "identificador-existente",
-  "updatedAt": "2026-07-19T22:15:00+02:00",
-  ...solo campos que cambian o el registro completo, según acepte el receptor...
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--paper);
 }
 
-Eliminar:
-{
-  "action": "delete",
-  "id": "identificador-existente"
+button, input { font: inherit; }
+button { color: inherit; }
+
+.site-header,
+main {
+  width: min(100% - 22px, var(--max));
+  margin-inline: auto;
 }
 
-No inventar id para update o delete.
-
-VARIAS NOTICIAS
----------------
-{
-  "articles": [
-    { "action": "add", "title": "...", "content": "..." },
-    { "action": "add", "title": "...", "content": "..." }
-  ]
+.site-header {
+  padding: 16px 0 22px;
+  text-align: center;
 }
 
-JSONL
------
-Una noticia por línea. No usar corchetes ni comas entre líneas.
-
-GENERADOR SVG — TITLE GRID V1
-=============================
-
-FUNCIÓN
--------
-Crear una identidad cuadrada distinta para cada noticia usando únicamente el
-titular. El SVG se muestra pequeño entre COMPARTIR y COPIAR LINK. Al pulsarlo,
-abre la misma acción nativa de compartir; nunca descarga el archivo.
-
-ENTRADA DEL PLUGIN
-------------------
-{
-  "title": "Dos días después del huracán",
-  "slug": "dos-dias-despues-del-huracan"
+.brand {
+  display: inline-block;
+  max-width: 100%;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: clamp(2.7rem, 13.6vw, 4.8rem);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.065em;
+  line-height: 1;
+  padding: .06em .08em .16em 0;
+  white-space: nowrap;
 }
 
-SALIDA DEL PLUGIN
------------------
-- Archivo: media/noticias/dos-dias-despues-del-huracan.svg
-- MIME: image/svg+xml
-- Dimensiones declaradas: 1200 x 1200.
-- Fondo: #f7f7f5.
-- Texto: #2d2d2b.
-- Fuente CSS: Arial, Helvetica, sans-serif.
-- font-weight: 700.
-- font-style: italic.
-- Sin descarga asociada.
+.main-nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 22px;
+}
 
-ALGORITMO EXACTO
-----------------
-1. Normalizar title a Unicode NFC.
-2. Convertirlo a minúsculas.
-3. Eliminar espacios, signos y símbolos.
-4. Conservar letras, tildes, ñ y números.
+.main-nav button {
+  border: 2px solid var(--line);
+  background: transparent;
+  padding: .6em .2em .52em;
+  font-size: clamp(.62rem, 2.75vw, .8rem);
+  line-height: 1;
+  font-weight: 900;
+  cursor: pointer;
+}
 
-   "Dos días después del huracán"
-   -> "dosdíasdespuésdelhuracán"
+.main-nav button:hover,
+.main-nav button:focus-visible,
+.main-nav button[aria-pressed="true"] {
+  color: var(--paper);
+  background: var(--ink);
+  outline: none;
+}
 
-5. Contar los caracteres Unicode resultantes.
-6. Dividirlos secuencialmente en tres grupos tan iguales como sea posible.
-7. Si sobran caracteres, asignar uno primero a la línea 1 y después a la línea 2.
-8. No buscar cortes semánticos y no modificar el orden del titular.
-9. Dibujar las tres líneas en un bloque de 960 x aproximadamente 840 unidades,
-   centrado dentro del lienzo 1200 x 1200.
-10. Usar estas posiciones:
+.status {
+  text-align: center;
+  font-size: .82rem;
+  margin-bottom: 10px;
+}
 
-    línea 1: x=120, y=370
-    línea 2: x=120, y=650
-    línea 3: x=120, y=930
+.status:empty { display: none; }
 
-11. Cada línea utiliza textLength=960 y lengthAdjust="spacingAndGlyphs" para
-    formar un bloque tipográfico cuadrado y compacto.
-12. Usar font-size=300, Arial Bold Italic.
-13. Escapar &, < y > como XML.
-14. Minificar el resultado a una sola línea.
+.news-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
 
-PLANTILLA SVG
--------------
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200"><rect width="1200" height="1200" fill="#f7f7f5"/><g fill="#2d2d2b" font-family="Arial,Helvetica,sans-serif" font-size="300" font-weight="700" font-style="italic"><text x="120" y="370" textLength="960" lengthAdjust="spacingAndGlyphs">LINEA1</text><text x="120" y="650" textLength="960" lengthAdjust="spacingAndGlyphs">LINEA2</text><text x="120" y="930" textLength="960" lengthAdjust="spacingAndGlyphs">LINEA3</text></g></svg>
+.article-card {
+  position: relative;
+  width: 100%;
+  min-height: 74vh;
+  border: 2px solid var(--line);
+  padding: 19px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+}
 
-PROHIBIDO EN EL SVG
--------------------
-- <metadata>, comentarios, RDF, EXIF o datos del programa creador.
-- Fuentes incrustadas, base64, imágenes raster o filtros.
-- Paths que conviertan las letras en curvas.
-- JavaScript, enlaces, animaciones o elementos externos.
-- Identificadores, clases o grupos innecesarios.
-- XML generado por Illustrator/Inkscape con cabeceras y namespaces extra.
+.article-card:visited { color: var(--ink); }
 
-PESO
-----
-El objetivo normal es inferior a 1 KiB por SVG. La dimensión 1200 x 1200 no
-incrementa significativamente el peso porque el archivo contiene texto y formas,
-no 1.440.000 píxeles almacenados.
+.article-card:focus-visible {
+  outline: 4px solid var(--ink);
+  outline-offset: 4px;
+}
 
-INTEGRACIÓN
------------
-El compilador incluido ya implementa TITLE GRID V1. El plugin del rack debe usar
-el mismo algoritmo para que la previsualización local y la publicación sean
-idénticas. Aunque el plugin no se ejecute, GitHub Actions regenerará el SVG desde
-title al publicar.
+.card-title {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  margin: 0 0 18px;
+  width: 100%;
+  font-size: clamp(2.8rem, 14vw, 5.5rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: .03em .13em .14em .04em;
+}
 
-La página HTML utiliza el SVG en:
-- el bloque visual COMPARTIR / SVG / COPIAR LINK;
-- og:image;
-- twitter:image;
-- NewsArticle.image;
-- sitemap.xml como imagen asociada.
+.card-title-text {
+  display: inline-block;
+  flex: none;
+  white-space: nowrap;
+  transform-origin: right top;
+}
 
-VALIDACIÓN AUTOMÁTICA
----------------------
-La publicación falla deliberadamente si encuentra:
-- JSON inválido;
-- id o slug duplicados;
-- slug con mayúsculas, espacios o caracteres no permitidos;
-- fechas sin zona horaria;
-- noticia sin title o content;
-- URL de fuente inválida.
+.card-summary {
+  margin: 0;
+  font-size: clamp(1.42rem, 5.8vw, 2.1rem);
+  line-height: 1.14;
+  letter-spacing: -0.032em;
+  overflow: hidden;
+  padding: .03em 0 .1em;
+}
 
-Esto impide que una ejecución automática rompa toda la web.
+.card-footer {
+  margin-top: auto;
+  padding-top: 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: clamp(.76rem, 3.1vw, .98rem);
+  line-height: 1.2;
+}
+
+.card-date { white-space: nowrap; }
+
+.read-more,
+.pager button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.read-more {
+  font-style: italic;
+  text-align: right;
+  font-size: inherit;
+}
+
+.read-more:hover,
+.read-more:focus-visible,
+.pager button:hover,
+.pager button:focus-visible {
+  opacity: .45;
+  outline: none;
+}
+
+.horizontal-scroll { display: none; }
+
+.pager {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding: 24px 0 42px;
+}
+
+.pager button {
+  font-size: 2.5rem;
+  line-height: 1;
+  min-width: 46px;
+}
+
+.pager button:disabled {
+  opacity: .18;
+  cursor: default;
+}
+
+#pageIndicator {
+  min-width: 70px;
+  text-align: center;
+  font-size: .85rem;
+}
+
+.modal-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  background: rgb(0 0 0 / 24%);
+}
+
+.modal-layer[hidden] { display: none; }
+
+.modal {
+  position: relative;
+  width: 96vw;
+  height: 88vh;
+  overflow: hidden;
+  border: 2px solid var(--line);
+  background: var(--paper);
+  box-shadow: 7px 7px 0 rgb(0 0 0 / 20%);
+}
+
+.modal-close {
+  position: absolute;
+  z-index: 2;
+  right: 10px;
+  top: 5px;
+  border: 0;
+  padding: 0 8px 5px;
+  background: var(--paper);
+  font-size: 2.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal-content {
+  height: 100%;
+  overflow-y: scroll;
+  padding: 31px 18px 36px;
+  scrollbar-width: auto;
+  scrollbar-color: var(--ink) var(--paper);
+}
+
+.modal-content::-webkit-scrollbar { width: 15px; }
+.modal-content::-webkit-scrollbar-track { background: var(--paper); }
+.modal-content::-webkit-scrollbar-thumb {
+  border: 3px solid var(--paper);
+  background: var(--ink);
+}
+
+.article-modal-title,
+.utility-title {
+  margin: 0 34px 24px;
+  padding: .05em 0 .13em;
+  font-size: clamp(3rem, 12vw, 6.2rem);
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+  text-align: center;
+}
+
+.article-body {
+  font-size: clamp(1.2rem, 5vw, 1.65rem);
+  line-height: 1.27;
+  font-weight: 700;
+}
+
+.article-body p { margin: 0 0 1.15em; }
+
+.share-panel {
+  margin-top: 40px;
+  padding-top: 17px;
+  border-top: 2px solid var(--line);
+}
+
+.share-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(88px, 24vw, 132px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(8px, 2.2vw, 20px);
+  width: min(100%, 650px);
+  margin-inline: auto;
+}
+
+.share-action {
+  border: 0;
+  padding: 0;
+  color: var(--ink);
+  background: transparent;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  font-style: normal;
+  text-decoration: none;
+  text-transform: lowercase;
+  cursor: pointer;
+}
+
+.share-action:hover,
+.share-action:focus-visible,
+.share-image-button:hover,
+.share-image-button:focus-visible {
+  opacity: .48;
+  outline: none;
+}
+
+.share-image-button {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.share-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.article-page-body { min-height: 100vh; }
+
+.article-site-header { padding-bottom: 8px; }
+
+.article-page {
+  width: min(100% - 22px, 1040px);
+  margin-inline: auto;
+  padding: 12px 0 64px;
+}
+
+.article-page-content { width: 100%; }
+
+.article-byline {
+  margin: -8px auto 34px;
+  text-align: center;
+  font-size: .82rem;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.article-byline a,
+.article-sources a {
+  color: inherit;
+}
+
+.article-sources {
+  margin-top: 42px;
+  padding-top: 18px;
+  border-top: 2px solid var(--line);
+  font-weight: 400;
+}
+
+.article-sources h2 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.article-sources ul {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.listing-title {
+  margin: 0 0 22px;
+  font-size: clamp(2.6rem, 10vw, 6rem);
+  line-height: 1;
+  letter-spacing: -.05em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.static-listing { padding-bottom: 48px; }
+
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.search-form input {
+  width: 100%;
+  min-width: 0;
+  border: 2px solid var(--line);
+  padding: 12px;
+  color: var(--ink);
+  background: transparent;
+}
+
+.modal-button {
+  display: inline-block;
+  border: 2px solid var(--line);
+  padding: 10px 14px;
+  color: var(--ink);
+  background: transparent;
+  font-weight: 900;
+  font-style: italic;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-button:visited {
+  color: var(--ink);
+}
+
+.modal-button:hover,
+.modal-button:focus-visible {
+  color: var(--paper);
+  background: var(--ink);
+  outline: none;
+}
+
+.result-list { border-top: 2px solid var(--line); }
+
+.result-item {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-bottom: 2px solid var(--line);
+  padding: 16px 0;
+  color: var(--ink);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.result-item:hover,
+.result-item:focus-visible {
+  padding-inline: 12px;
+  color: var(--paper);
+  background: var(--ink);
+  outline: none;
+}
+
+.result-item strong {
+  display: block;
+  font-size: clamp(1.3rem, 7vw, 2.2rem);
+  line-height: 1.05;
+}
+
+.result-item time {
+  display: block;
+  margin-top: 7px;
+  font-size: .9rem;
+}
+
+.donation-panel { text-align: center; }
+
+.donation-copy {
+  max-width: 760px;
+  margin: 0 auto 28px;
+  font-size: clamp(1rem, 4vw, 1.3rem);
+  line-height: 1.38;
+  font-weight: 400;
+}
+
+.donation-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stripe-note {
+  max-width: 650px;
+  margin: 22px auto 0;
+  font-size: .78rem;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+.empty {
+  border: 2px solid var(--line);
+  padding: 28px;
+  text-align: center;
+}
+
+body.modal-open { overflow: hidden; }
+
+@media (min-width: 740px) {
+  .site-header,
+  main {
+    width: min(var(--max), calc(100% - 38px));
+  }
+
+  .site-header {
+    padding: 8px 0 10px;
+  }
+
+  .brand {
+    font-size: clamp(3.55rem, 5vw, 6.1rem);
+    letter-spacing: -0.07em;
+    padding-bottom: .08em;
+  }
+
+  .main-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(90px, 11vw, 190px);
+    margin-top: 7px;
+  }
+
+  .main-nav button {
+    width: auto;
+    flex: none;
+    border-width: 1.5px;
+    padding: 4px 8px 3px;
+    font-size: clamp(.55rem, .58vw, .64rem);
+    letter-spacing: .02em;
+  }
+
+  .news-grid {
+    display: flex;
+    gap: var(--gap);
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .news-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .article-card {
+    flex: 0 0 clamp(390px, 29vw, 500px);
+    width: clamp(390px, 29vw, 500px);
+    min-width: 0;
+    min-height: 0;
+    height: clamp(455px, calc(100vh - 285px), 555px);
+    border-width: 3px;
+    padding: clamp(20px, 1.65vw, 30px);
+    scroll-snap-align: start;
+  }
+
+  .card-title {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    width: 100%;
+    min-width: 0;
+    margin-bottom: clamp(10px, 1vw, 16px);
+    padding: .02em .13em .12em .04em;
+    overflow: hidden;
+    font-size: clamp(6.4rem, 7.1vw, 8.5rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .card-title-text {
+    display: inline-block;
+    flex: none;
+    white-space: nowrap;
+    transform-origin: right top;
+  }
+
+  .card-summary {
+    min-width: 0;
+    font-size: clamp(1.12rem, 1.5vw, 1.78rem);
+    line-height: 1.11;
+  }
+
+  .card-footer {
+    margin-top: 14px;
+    padding-top: 0;
+    gap: 18px;
+    font-size: clamp(.72rem, .82vw, .92rem);
+  }
+
+  .horizontal-scroll {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 8px 0 3px;
+  }
+
+  .horizontal-scroll[hidden] {
+    display: flex;
+  }
+
+  .horizontal-range {
+    width: min(38vw, 620px);
+    height: 24px;
+    margin: 0;
+    padding: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .horizontal-range::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 2px;
+    background: var(--line);
+  }
+
+  .horizontal-range::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    margin-top: -9px;
+    border: 0;
+    border-radius: 50%;
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--ink);
+    cursor: grab;
+  }
+
+  .horizontal-range:active::-webkit-slider-thumb {
+    cursor: grabbing;
+  }
+
+  .horizontal-range::-moz-range-track {
+    width: 100%;
+    height: 2px;
+    border: 0;
+    background: var(--line);
+  }
+
+  .horizontal-range::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ink);
+    cursor: grab;
+  }
+
+  .horizontal-range:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 5px;
+  }
+
+  .pager {
+    gap: 24px;
+    padding: 0 0 6px;
+  }
+
+  .pager button {
+    min-width: 38px;
+    font-size: 1.9rem;
+  }
+
+  #pageIndicator {
+    font-size: .72rem;
+  }
+
+  .modal-layer {
+    padding: clamp(16px, 4vw, 54px);
+  }
+
+  .modal {
+    width: min(1040px, 94vw);
+    height: min(84vh, 920px);
+    border-width: 3px;
+    box-shadow: 14px 14px 0 rgb(0 0 0 / 20%);
+  }
+
+  .modal-content {
+    padding: clamp(32px, 5vw, 64px);
+  }
+
+  .article-modal-title,
+  .utility-title {
+    margin: 0 54px 25px;
+    font-size: clamp(3.2rem, 7vw, 6.8rem);
+  }
+
+  .article-body {
+    font-size: clamp(1.2rem, 1.85vw, 1.65rem);
+  }
+
+  .search-form {
+    flex-direction: row;
+  }
+
+  .search-form input,
+  .modal-button,
+  .result-list,
+  .result-item {
+    border-width: 3px;
+  }
+
+  .donation-copy {
+    font-size: clamp(1rem, 1.45vw, 1.25rem);
+  }
+}
