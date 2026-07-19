@@ -23,10 +23,10 @@
     <section id="status" class="status" aria-live="polite"></section>
     <section id="newsGrid" class="news-grid" aria-label="Noticias"></section>
 
-    <div id="horizontalScroll" class="horizontal-scroll" aria-hidden="true">
-      <div id="horizontalTrack" class="horizontal-track">
-        <button id="horizontalThumb" class="horizontal-thumb" type="button" tabindex="-1" aria-label="Desplazamiento horizontal"></button>
-      </div>
+    <div id="horizontalScroll" class="horizontal-scroll">
+      <input id="horizontalRange" class="horizontal-range" type="range"
+        min="0" max="1000" value="0" step="1"
+        aria-label="Desplazamiento horizontal de las noticias">
     </div>
 
     <nav class="pager" aria-label="Paginación">
@@ -45,7 +45,7 @@
 
   <template id="articleCardTemplate">
     <article class="article-card">
-      <h2 class="card-title"></h2>
+      <h2 class="card-title"><span class="card-title-text"></span></h2>
       <p class="card-summary"></p>
       <div class="card-footer">
         <time class="card-date"></time>

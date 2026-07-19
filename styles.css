@@ -106,6 +106,9 @@ main {
 }
 
 .card-title {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
   margin: 0 0 18px;
   width: 100%;
   font-size: clamp(2.8rem, 14vw, 5.5rem);
@@ -116,6 +119,13 @@ main {
   white-space: nowrap;
   overflow: hidden;
   padding: .03em .06em .14em 0;
+}
+
+.card-title-text {
+  display: inline-block;
+  flex: none;
+  white-space: nowrap;
+  transform-origin: right top;
 }
 
 .card-summary {
@@ -424,17 +434,15 @@ body.modal-open { overflow: hidden; }
     width: auto;
     flex: none;
     border-width: 1.5px;
-    padding: 3px 7px 2px;
-    font-size: clamp(.43rem, .48vw, .54rem);
+    padding: 4px 8px 3px;
+    font-size: clamp(.55rem, .58vw, .64rem);
     letter-spacing: .02em;
   }
 
   .news-grid {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: clamp(380px, 29vw, 500px);
-    grid-template-rows: 1fr;
+    display: flex;
     gap: var(--gap);
+    width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
     overscroll-behavior-inline: contain;
@@ -443,76 +451,119 @@ body.modal-open { overflow: hidden; }
     -ms-overflow-style: none;
   }
 
-  .news-grid::-webkit-scrollbar { display: none; }
+  .news-grid::-webkit-scrollbar {
+    display: none;
+  }
 
   .article-card {
+    flex: 0 0 clamp(390px, 29vw, 500px);
+    width: clamp(390px, 29vw, 500px);
+    min-width: 0;
     min-height: 0;
-    height: clamp(520px, calc(100vh - 205px), 720px);
+    height: clamp(455px, calc(100vh - 285px), 555px);
     border-width: 3px;
     padding: clamp(20px, 1.65vw, 30px);
     scroll-snap-align: start;
   }
 
   .card-title {
-    margin-bottom: clamp(13px, 1.25vw, 21px);
-    font-size: clamp(3.05rem, 4.9vw, 6rem);
-    line-height: 1.08;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    width: 100%;
+    min-width: 0;
+    margin-bottom: clamp(10px, 1vw, 16px);
+    padding: .02em .03em .12em 0;
+    overflow: hidden;
+    font-size: clamp(6.4rem, 7.1vw, 8.5rem);
+    line-height: 1;
+    letter-spacing: -0.075em;
+  }
+
+  .card-title-text {
+    display: inline-block;
+    flex: none;
+    white-space: nowrap;
+    transform-origin: right top;
   }
 
   .card-summary {
-    font-size: clamp(1.18rem, 1.65vw, 1.92rem);
-    line-height: 1.13;
+    min-width: 0;
+    font-size: clamp(1.12rem, 1.5vw, 1.78rem);
+    line-height: 1.11;
   }
 
   .card-footer {
-    padding-top: 18px;
+    margin-top: 14px;
+    padding-top: 0;
     gap: 18px;
     font-size: clamp(.72rem, .82vw, .92rem);
   }
 
   .horizontal-scroll {
-    display: block;
-    width: min(42%, 680px);
-    margin: 0 auto;
-    padding: 5px 0 0;
-  }
-
-  .horizontal-scroll[hidden] { display: block; }
-
-  .horizontal-track {
-    position: relative;
+    display: flex;
+    justify-content: center;
     width: 100%;
-    height: 22px;
-    cursor: pointer;
-    touch-action: none;
+    padding: 8px 0 3px;
   }
 
-  .horizontal-track::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 11px;
+  .horizontal-scroll[hidden] {
+    display: flex;
+  }
+
+  .horizontal-range {
+    width: min(38vw, 620px);
+    height: 24px;
+    margin: 0;
+    padding: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .horizontal-range::-webkit-slider-runnable-track {
+    width: 100%;
     height: 2px;
     background: var(--line);
   }
 
-  .horizontal-thumb {
-    position: absolute;
-    left: 0;
-    top: 2px;
+  .horizontal-range::-webkit-slider-thumb {
     width: 20px;
     height: 20px;
-    min-width: 20px;
+    margin-top: -9px;
     border: 0;
     border-radius: 50%;
-    padding: 0;
+    appearance: none;
+    -webkit-appearance: none;
     background: var(--ink);
     cursor: grab;
-    touch-action: none;
   }
 
-  .horizontal-thumb:active { cursor: grabbing; }
+  .horizontal-range:active::-webkit-slider-thumb {
+    cursor: grabbing;
+  }
+
+  .horizontal-range::-moz-range-track {
+    width: 100%;
+    height: 2px;
+    border: 0;
+    background: var(--line);
+  }
+
+  .horizontal-range::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ink);
+    cursor: grab;
+  }
+
+  .horizontal-range:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 5px;
+  }
 
   .pager {
     gap: 24px;
@@ -524,7 +575,9 @@ body.modal-open { overflow: hidden; }
     font-size: 1.9rem;
   }
 
-  #pageIndicator { font-size: .72rem; }
+  #pageIndicator {
+    font-size: .72rem;
+  }
 
   .modal-layer {
     padding: clamp(16px, 4vw, 54px);

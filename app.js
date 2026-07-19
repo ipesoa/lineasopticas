@@ -19,8 +19,7 @@
   const modalClose = document.querySelector("#modalClose");
   const template = document.querySelector("#articleCardTemplate");
   const horizontalScroll = document.querySelector("#horizontalScroll");
-  const horizontalTrack = document.querySelector("#horizontalTrack");
-  const horizontalThumb = document.querySelector("#horizontalThumb");
+  const horizontalRange = document.querySelector("#horizontalRange");
   const featuredButton = document.querySelector('[data-action="featured"]');
 
   const normalize = raw => {
@@ -75,26 +74,54 @@
     .replace(/\s+/g, " ")
     .trim();
 
-  const fitTitle = element => {
-    element.style.fontSize = "";
-    const max = parseFloat(getComputedStyle(element).fontSize);
-    const min = 12;
-    const availableWidth = element.clientWidth - 2;
-    let low = min;
-    let high = max;
+  const fitTitle = container => {
+    const text = container.querySelector(".card-title-text");
+    if (!text) return;
 
-    for (let iteration = 0; iteration < 18; iteration += 1) {
-      const middle = (low + high) / 2;
-      element.style.fontSize = `${middle}px`;
+    text.style.fontSize = "";
+    text.style.transform = "none";
 
-      if (element.scrollWidth <= availableWidth) {
-        low = middle;
-      } else {
-        high = middle;
+    const maximumSize = parseFloat(getComputedStyle(container).fontSize);
+    const availableWidth = Math.max(1, container.clientWidth - 3);
+
+    if (window.innerWidth < 740) {
+      let low = 12;
+      let high = maximumSize;
+
+      for (let iteration = 0; iteration < 18; iteration += 1) {
+        const middle = (low + high) / 2;
+        text.style.fontSize = `${middle}px`;
+
+        if (text.scrollWidth <= availableWidth) low = middle;
+        else high = middle;
       }
+
+      text.style.fontSize = `${Math.max(12, low - 0.2)}px`;
+      return;
     }
 
-    element.style.fontSize = `${Math.max(min, low - 0.15)}px`;
+    text.style.fontSize = `${maximumSize}px`;
+    const naturalWidth = Math.max(1, text.scrollWidth);
+    const requiredScale = availableWidth / naturalWidth;
+    const minimumHorizontalScale = 0.72;
+
+    if (requiredScale >= 1) return;
+
+    if (requiredScale >= minimumHorizontalScale) {
+      text.style.transform = `scaleX(${requiredScale})`;
+      return;
+    }
+
+    const adjustedSize = maximumSize * requiredScale / minimumHorizontalScale;
+    text.style.fontSize = `${Math.max(22, adjustedSize)}px`;
+
+    const adjustedWidth = Math.max(1, text.scrollWidth);
+    const finalScale = Math.min(
+      1,
+      Math.max(minimumHorizontalScale, availableWidth / adjustedWidth)
+    );
+
+    text.style.transform = `scaleX(${finalScale})`;
   };
 
   const fitPreview = element => {
@@ -131,71 +158,20 @@
     element.textContent = best || "…";
   };
 
-  const syncHorizontalThumb = () => {
-    if (!horizontalScroll || window.innerWidth < 740) return;
+  const syncHorizontalControl = () => {
+    if (!horizontalRange || window.innerWidth < 740) return;
 
     const maximumScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
-    const availableTravel = Math.max(
-      0,
-      horizontalTrack.clientWidth - horizontalThumb.offsetWidth
-    );
     const ratio = maximumScroll > 0 ? grid.scrollLeft / maximumScroll : 0;
 
-    horizontalThumb.style.transform = `translateX(${ratio * availableTravel}px)`;
-    horizontalScroll.hidden = window.innerWidth < 740;
+    horizontalRange.value = String(Math.round(ratio * 1000));
+    horizontalRange.disabled = false;
   };
 
   const enableHorizontalControls = () => {
-    let dragging = false;
-    let startPointerX = 0;
-    let startScrollLeft = 0;
-
-    horizontalThumb.addEventListener("pointerdown", event => {
-      dragging = true;
-      startPointerX = event.clientX;
-      startScrollLeft = grid.scrollLeft;
-      horizontalThumb.setPointerCapture(event.pointerId);
-      event.preventDefault();
-    });
-
-    horizontalThumb.addEventListener("pointermove", event => {
-      if (!dragging) return;
-
+    horizontalRange.addEventListener("input", () => {
       const maximumScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
-      const availableTravel = Math.max(
-        1,
-        horizontalTrack.clientWidth - horizontalThumb.offsetWidth
-      );
-      const pointerMovement = event.clientX - startPointerX;
-
-      grid.scrollLeft = startScrollLeft
-        + pointerMovement * (maximumScroll / availableTravel) * 1.65;
-    });
-
-    const stopDragging = event => {
-      dragging = false;
-      if (horizontalThumb.hasPointerCapture?.(event.pointerId)) {
-        horizontalThumb.releasePointerCapture(event.pointerId);
-      }
-    };
-
-    horizontalThumb.addEventListener("pointerup", stopDragging);
-    horizontalThumb.addEventListener("pointercancel", stopDragging);
-
-    horizontalTrack.addEventListener("pointerdown", event => {
-      if (event.target === horizontalThumb) return;
-
-      const bounds = horizontalTrack.getBoundingClientRect();
-      const thumbWidth = horizontalThumb.offsetWidth;
-      const availableTravel = Math.max(1, bounds.width - thumbWidth);
-      const pointerPosition = Math.min(
-        Math.max(event.clientX - bounds.left - thumbWidth / 2, 0),
-        availableTravel
-      );
-      const maximumScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
-
-      grid.scrollLeft = (pointerPosition / availableTravel) * maximumScroll;
-      syncHorizontalThumb();
+      grid.scrollLeft = (Number(horizontalRange.value) / 1000) * maximumScroll;
     });
 
     grid.addEventListener("wheel", event => {
@@ -208,7 +184,7 @@
       if (!movement) return;
 
       event.preventDefault();
-      grid.scrollLeft += movement * 2.35;
+      grid.scrollLeft += movement * 2.8;
     }, { passive: false });
   };
 
@@ -224,6 +200,8 @@
       return;
     }
 
+    horizontalScroll.hidden = false;
+
     const totalPages = pageCount();
     state.page = Math.min(Math.max(state.page, 1), totalPages);
     const start = (state.page - 1) * Number(config.itemsPerPage || 40);
@@ -236,13 +214,14 @@
       const node = template.content.cloneNode(true);
       const card = node.querySelector(".article-card");
       const title = node.querySelector(".card-title");
+      const titleText = node.querySelector(".card-title-text");
       const preview = node.querySelector(".card-summary");
       const date = node.querySelector(".card-date");
       const read = node.querySelector(".read-more");
 
       const open = () => openArticle(article, true);
 
-      title.textContent = article.title;
+      titleText.textContent = article.title;
       preview.dataset.fullText = article.content || article.summary;
       preview.textContent = article.content || article.summary;
       date.textContent = formatDate(article.publishedAt);
@@ -269,10 +248,12 @@
     });
 
     requestAnimationFrame(() => {
-      grid.querySelectorAll(".card-title").forEach(fitTitle);
-      grid.querySelectorAll(".card-summary").forEach(fitPreview);
-      grid.scrollLeft = 0;
-      syncHorizontalThumb();
+      requestAnimationFrame(() => {
+        grid.querySelectorAll(".card-title").forEach(fitTitle);
+        grid.querySelectorAll(".card-summary").forEach(fitPreview);
+        grid.scrollLeft = 0;
+        syncHorizontalControl();
+      });
     });
 
     indicator.textContent = `${state.page} / ${totalPages}`;
@@ -536,12 +517,12 @@
     if (article) openArticle(article, false);
   });
 
-  grid.addEventListener("scroll", syncHorizontalThumb, { passive: true });
+  grid.addEventListener("scroll", syncHorizontalControl, { passive: true });
 
   window.addEventListener("resize", () => {
     grid.querySelectorAll(".card-title").forEach(fitTitle);
     grid.querySelectorAll(".card-summary").forEach(fitPreview);
-    syncHorizontalThumb();
+    syncHorizontalControl();
   });
 
   enableHorizontalControls();
