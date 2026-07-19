@@ -2,33 +2,6 @@
   "version": 1,
   "articles": [
     {
-      "id": "soberania-sin-eleccion",
-      "slug": "soberania-sin-eleccion",
-      "title": "Soberanía sin elección",
-      "summary": "Una ciudadanía que solo escoge administradores, pero no interviene sobre las leyes, conserva el voto y pierde soberanía.",
-      "content": "La democracia representativa suele identificar la soberanía popular con la capacidad periódica de elegir gobernantes.\n\nSin embargo, esa definición deja intacta una pregunta incómoda: ¿qué poder conserva la ciudadanía sobre las normas que organizan su existencia?\n\nCuando las decisiones sustantivas quedan cerradas antes de toda deliberación, el voto selecciona gestores de un marco que no puede cuestionarse. La soberanía se conserva como fórmula jurídica mientras se vacía como práctica política.",
-      "publishedAt": "2026-07-19T16:05:00+02:00",
-      "featured": true,
-      "tags": [
-        "política",
-        "soberanía"
-      ],
-      "hiddenTags": [
-        "Rousseau",
-        "oligarquía",
-        "democracia"
-      ],
-      "seoTitle": "Soberanía sin elección",
-      "metaDescription": "Una ciudadanía que solo escoge administradores, pero no interviene sobre las leyes, conserva el voto y pierde soberanía.",
-      "updatedAt": "2026-07-19T16:05:00+02:00",
-      "author": "Líneas Ópticas",
-      "authorType": "Organization",
-      "section": "Política",
-      "sources": [],
-      "language": "es",
-      "status": "published"
-    },
-    {
       "id": "la-calle-como-imprenta",
       "slug": "la-calle-como-imprenta",
       "title": "La calle como imprenta",
