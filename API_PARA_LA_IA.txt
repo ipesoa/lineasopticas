@@ -1,70 +1,114 @@
-FORMATO DE NOTICIAS PARA LA IA
-==============================
-
-La IA debe enviar las noticias en UTF-8, preferentemente como JSON o JSONL.
-
-REGLAS DEL CONTENIDO
---------------------
-- El titular debe ser corto, directo y apto para una sola línea.
-- Preferencia: entre 3 y 7 palabras.
-- Longitud aconsejada del titular: máximo 55 caracteres.
-- El artículo debe contener como mínimo 8 líneas.
-- No existe un máximo rígido, pero debe evitarse una extensión innecesaria.
-- Extensión recomendada: entre 8 y 40 líneas.
-- La portada muestra directamente el comienzo de content, nunca un resumen separado.
-- La portada recorta el artículo después de 8 líneas visuales y añade puntos suspensivos.
-- No enviar HTML.
-- Las etiquetas sirven para la búsqueda y no se muestran al lector.
-
-FORMATO RECOMENDADO
--------------------
 {
-  "action": "add",
-  "title": "Titular corto",
-  "content": "Primera línea.\nSegunda línea.\nTercera línea.\nCuarta línea.\nQuinta línea.\nSexta línea.\nSéptima línea.\nOctava línea.",
-  "publishedAt": "2026-07-19T20:30:00+02:00",
-  "featured": false,
-  "tags": ["cultura", "política"],
-  "hiddenTags": ["sinónimo", "tema relacionado"]
-}
-
-VARIAS NOTICIAS
----------------
-{
+  "version": 1,
   "articles": [
     {
-      "action": "add",
-      "title": "Primer titular",
-      "content": "Artículo completo con un mínimo de 8 líneas.",
-      "publishedAt": "2026-07-19T20:30:00+02:00",
+      "id": "capitalizar-el-tiempo",
+      "slug": "capitalizar-el-tiempo",
+      "title": "Capitalizar el tiempo",
+      "summary": "Cuando la eficacia se convierte en moral, pensar empieza a parecer una pérdida improductiva.",
+      "content": "El tiempo contemporáneo ya no se limita a pasar: debe justificar su existencia.\n\nCada hora parece obligada a convertirse en rendimiento, aprendizaje, visibilidad o dinero. Incluso el descanso se administra como una inversión destinada a producir mejor al día siguiente.\n\nLa cuestión política comienza cuando disponer de tiempo sin rendimiento deja de ser una experiencia corriente y se convierte en privilegio. Pensar exige demora, tanteo, repetición y momentos que, desde la lógica productiva, parecen inútiles.\n\nDefender ese tiempo no consiste en romantizar la pereza. Consiste en impedir que toda la vida quede traducida al idioma de la utilidad.",
+      "publishedAt": "2026-07-19T18:30:00+02:00",
+      "featured": true,
+      "tags": [
+        "tiempo",
+        "trabajo",
+        "ensayo"
+      ],
+      "hiddenTags": [
+        "productividad",
+        "capitalismo",
+        "ocio"
+      ],
+      "seoTitle": "Capitalizar el tiempo",
+      "metaDescription": "Cuando la eficacia se convierte en moral, pensar empieza a parecer una pérdida improductiva.",
+      "updatedAt": "2026-07-19T18:30:00+02:00",
+      "author": "Líneas Ópticas",
+      "authorType": "Organization",
+      "section": "Pensamiento",
+      "sources": [],
+      "language": "es",
+      "status": "published"
+    },
+    {
+      "id": "soberania-sin-eleccion",
+      "slug": "soberania-sin-eleccion",
+      "title": "Soberanía sin elección",
+      "summary": "Una ciudadanía que solo escoge administradores, pero no interviene sobre las leyes, conserva el voto y pierde soberanía.",
+      "content": "La democracia representativa suele identificar la soberanía popular con la capacidad periódica de elegir gobernantes.\n\nSin embargo, esa definición deja intacta una pregunta incómoda: ¿qué poder conserva la ciudadanía sobre las normas que organizan su existencia?\n\nCuando las decisiones sustantivas quedan cerradas antes de toda deliberación, el voto selecciona gestores de un marco que no puede cuestionarse. La soberanía se conserva como fórmula jurídica mientras se vacía como práctica política.",
+      "publishedAt": "2026-07-19T16:05:00+02:00",
+      "featured": true,
+      "tags": [
+        "política",
+        "soberanía"
+      ],
+      "hiddenTags": [
+        "Rousseau",
+        "oligarquía",
+        "democracia"
+      ],
+      "seoTitle": "Soberanía sin elección",
+      "metaDescription": "Una ciudadanía que solo escoge administradores, pero no interviene sobre las leyes, conserva el voto y pierde soberanía.",
+      "updatedAt": "2026-07-19T16:05:00+02:00",
+      "author": "Líneas Ópticas",
+      "authorType": "Organization",
+      "section": "Política",
+      "sources": [],
+      "language": "es",
+      "status": "published"
+    },
+    {
+      "id": "la-calle-como-imprenta",
+      "slug": "la-calle-como-imprenta",
+      "title": "La calle como imprenta",
+      "summary": "Un papel pequeño puede operar como una interrupción física dentro del flujo automatizado de imágenes.",
+      "content": "La octavilla no compite con la velocidad de una red social. Su fuerza está precisamente en carecer de esa velocidad.\n\nAparece como objeto, ocupa un lugar, puede doblarse, perderse o conservarse. No pide una cuenta ni mide cuánto tiempo permanece la mirada sobre ella.\n\nLa distribución callejera no garantiza lectores; produce encuentros. A veces ese margen de incertidumbre es más valioso que una métrica precisa.",
+      "publishedAt": "2026-07-18T23:12:00+02:00",
       "featured": false,
-      "tags": ["etiqueta"],
-      "hiddenTags": ["palabra de búsqueda"]
+      "tags": [
+        "edición",
+        "calle",
+        "papel"
+      ],
+      "hiddenTags": [
+        "octavillas",
+        "panfleto",
+        "distribución"
+      ],
+      "seoTitle": "La calle como imprenta",
+      "metaDescription": "Un papel pequeño puede operar como una interrupción física dentro del flujo automatizado de imágenes.",
+      "updatedAt": "2026-07-18T23:12:00+02:00",
+      "author": "Líneas Ópticas",
+      "authorType": "Organization",
+      "section": "Edición",
+      "sources": [],
+      "language": "es",
+      "status": "published"
+    },
+    {
+      "id": "contra-la-novedad",
+      "slug": "contra-la-novedad",
+      "title": "Contra la novedad",
+      "summary": "La actualidad no siempre describe lo nuevo; a menudo solo señala aquello que ha conseguido imponerse durante unas horas.",
+      "content": "La noticia es un dispositivo temporal. Determina qué merece atención ahora y, por tanto, qué puede olvidarse después.\n\nUn diario lento puede invertir esa lógica: no perseguir únicamente el acontecimiento, sino examinar las condiciones que lo vuelven visible.\n\nNo se trata de abandonar la actualidad, sino de impedir que la actualidad sea la única forma posible del presente.",
+      "publishedAt": "2026-07-18T20:40:00+02:00",
+      "featured": false,
+      "tags": [
+        "medios",
+        "actualidad"
+      ],
+      "hiddenTags": [
+        "periodismo",
+        "velocidad"
+      ],
+      "seoTitle": "Contra la novedad",
+      "metaDescription": "La actualidad no siempre describe lo nuevo; a menudo solo señala aquello que ha conseguido imponerse durante unas horas.",
+      "updatedAt": "2026-07-18T20:40:00+02:00",
+      "author": "Líneas Ópticas",
+      "authorType": "Organization",
+      "section": "Medios",
+      "sources": [],
+      "language": "es",
+      "status": "published"
     }
   ]
 }
-
-JSONL
------
-Una noticia por línea, sin corchetes y sin comas entre noticias:
-
-{"action":"add","title":"Titular corto","content":"Texto completo con al menos 8 líneas.","publishedAt":"2026-07-19T20:30:00+02:00","featured":false,"tags":["cultura"],"hiddenTags":[]}
-
-ACCIONES
---------
-- Nueva noticia: "action": "add"
-- Corregir: "action": "update" e "id": "identificador-existente"
-- Eliminar: "action": "delete" e "id": "identificador-existente"
-
-No inventar un id al actualizar o eliminar.
-
-TOKEN
------
-Enviar el token únicamente en la cabecera:
-
-Authorization: Bearer TU_TOKEN
-
-Nunca incluir el token dentro del JSON, del artículo o de un archivo .txt.
-
-La respuesta debe contener únicamente los datos. No añadir explicaciones,
-comentarios ni bloques Markdown fuera del formato elegido.

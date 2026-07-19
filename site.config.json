@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f5">
+  <title>Líneas Ópticas — diario independiente</title>
+  <meta name="description" content="Diario independiente de actualidad, cultura, política y pensamiento.">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <!-- GOOGLE_SITE_VERIFICATION -->
+  <link rel="canonical" href="https://ipesoa.github.io/lineasopticas/">
+  <link rel="alternate" type="application/rss+xml" title="Líneas Ópticas" href="https://ipesoa.github.io/lineasopticas/feed.xml">
+  <link rel="index" href="https://ipesoa.github.io/lineasopticas/archivo/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Líneas Ópticas">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:url" content="https://ipesoa.github.io/lineasopticas/">
+  <meta property="og:title" content="Líneas Ópticas">
+  <meta property="og:description" content="Diario independiente de actualidad, cultura, política y pensamiento.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Líneas Ópticas","url":"https://ipesoa.github.io/lineasopticas/","description":"Diario independiente de actualidad, cultura, política y pensamiento.","inLanguage":"es","publisher":{"@type":"Organization","name":"Líneas Ópticas","url":"https://ipesoa.github.io/lineasopticas/"}}</script>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Inicio">Líneas Ópticas</a>
+
+    <nav class="main-nav" aria-label="Navegación principal">
+      <button type="button" data-action="search">BUSCAR</button>
+      <button type="button" data-action="featured">DESTACADAS</button>
+      <button type="button" data-action="donation">DONACIÓN</button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section id="status" class="status" aria-live="polite"></section>
+    <section id="newsGrid" class="news-grid" aria-label="Noticias">
+    <!-- STATIC_NEWS_START -->
+    <!-- STATIC_NEWS_END -->
+    </section>
+
+    <div id="horizontalScroll" class="horizontal-scroll">
+      <input id="horizontalRange" class="horizontal-range" type="range"
+        min="0" max="1000" value="0" step="1"
+        aria-label="Desplazamiento horizontal de las noticias">
+    </div>
+
+    <nav class="pager" aria-label="Paginación">
+      <button id="prevPage" type="button" aria-label="Página anterior">&lt;</button>
+      <span id="pageIndicator" aria-live="polite"></span>
+      <button id="nextPage" type="button" aria-label="Página siguiente">&gt;</button>
+    </nav>
+  </main>
+
+  <div id="modalLayer" class="modal-layer" hidden>
+    <section id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button id="modalClose" class="modal-close" type="button" aria-label="Cerrar">×</button>
+      <div id="modalContent" class="modal-content"></div>
+    </section>
+  </div>
+
+  <template id="articleCardTemplate">
+    <a class="article-card" href="./">
+      <h2 class="card-title"><span class="card-title-text"></span></h2>
+      <p class="card-summary"></p>
+      <div class="card-footer">
+        <time class="card-date"></time>
+        <span class="read-more">seguir leyendo...</span>
+      </div>
+    </a>
+  </template>
+
+  <script src="./config.js"></script>
+  <script src="./app.js" defer></script>
+</body>
+</html>
