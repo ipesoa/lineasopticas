@@ -19,7 +19,8 @@
   const modalClose = document.querySelector("#modalClose");
   const template = document.querySelector("#articleCardTemplate");
   const horizontalScroll = document.querySelector("#horizontalScroll");
-  const horizontalRange = document.querySelector("#horizontalRange");
+  const horizontalTrack = document.querySelector("#horizontalTrack");
+  const horizontalThumb = document.querySelector("#horizontalThumb");
   const featuredButton = document.querySelector('[data-action="featured"]');
 
   const normalize = raw => {
@@ -33,9 +34,6 @@
         summary: String(item.summary ?? item.excerpt ?? item.resumen ?? ""),
         content: String(item.content ?? item.body ?? item.text ?? item.texto ?? ""),
         publishedAt: item.publishedAt ?? item.date ?? item.fecha ?? new Date().toISOString(),
-        updatedAt: item.updatedAt ?? item.publishedAt ?? item.date ?? item.fecha ?? new Date().toISOString(),
-        author: String(item.author ?? item.autor ?? config.publicationName ?? "Líneas Ópticas"),
-        section: String(item.section ?? item.seccion ?? "Actualidad"),
         featured: Boolean(item.featured ?? item.destacada ?? false),
         tags: Array.isArray(item.tags ?? item.etiquetas)
           ? (item.tags ?? item.etiquetas).map(String)
@@ -77,40 +75,33 @@
     .replace(/\s+/g, " ")
     .trim();
 
-  const fitTitle = container => {
-    const text = container.querySelector(".card-title-text");
-    if (!text) return;
+  const fitTitle = element => {
+    element.style.fontSize = "";
 
-    text.style.fontSize = "";
-    text.style.transform = "none";
+    const max = parseFloat(getComputedStyle(element).fontSize);
+    const min = 12;
+    const safetyMargin = window.innerWidth < 740 ? 18 : 28;
+    const availableWidth = Math.max(1, element.clientWidth - safetyMargin);
 
-    const maximumSize = parseFloat(getComputedStyle(container).fontSize);
-    const minimumSize = window.innerWidth < 740 ? 18 : 22;
-    const safetyMargin = window.innerWidth < 740 ? 12 : 18;
-    const availableWidth = Math.max(
-      1,
-      container.clientWidth - safetyMargin
-    );
-
-    let low = minimumSize;
-    let high = maximumSize;
+    let low = min;
+    let high = max;
 
     for (let iteration = 0; iteration < 20; iteration += 1) {
       const middle = (low + high) / 2;
-      text.style.fontSize = `${middle}px`;
+      element.style.fontSize = `${middle}px`;
 
-      if (text.scrollWidth <= availableWidth) {
+      if (element.scrollWidth <= availableWidth) {
         low = middle;
       } else {
         high = middle;
       }
     }
 
-    text.style.fontSize = `${Math.max(minimumSize, low - 0.6)}px`;
+    element.style.fontSize = `${Math.max(min, low - 0.7)}px`;
   };
 
   const fitPreview = element => {
-    const completeText = cleanPreviewText(element.dataset.fullText ?? element.textContent);
+    const completeText = cleanPreviewText(element.dataset.fullText);
     element.textContent = completeText;
 
     if (!completeText) return;
@@ -143,20 +134,71 @@
     element.textContent = best || "…";
   };
 
-  const syncHorizontalControl = () => {
-    if (!horizontalRange || window.innerWidth < 740) return;
+  const syncHorizontalThumb = () => {
+    if (!horizontalScroll || window.innerWidth < 740) return;
 
     const maximumScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
+    const availableTravel = Math.max(
+      0,
+      horizontalTrack.clientWidth - horizontalThumb.offsetWidth
+    );
     const ratio = maximumScroll > 0 ? grid.scrollLeft / maximumScroll : 0;
 
-    horizontalRange.value = String(Math.round(ratio * 1000));
-    horizontalRange.disabled = false;
+    horizontalThumb.style.transform = `translateX(${ratio * availableTravel}px)`;
+    horizontalScroll.hidden = window.innerWidth < 740;
   };
 
   const enableHorizontalControls = () => {
-    horizontalRange.addEventListener("input", () => {
+    let dragging = false;
+    let startPointerX = 0;
+    let startScrollLeft = 0;
+
+    horizontalThumb.addEventListener("pointerdown", event => {
+      dragging = true;
+      startPointerX = event.clientX;
+      startScrollLeft = grid.scrollLeft;
+      horizontalThumb.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    });
+
+    horizontalThumb.addEventListener("pointermove", event => {
+      if (!dragging) return;
+
       const maximumScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
-      grid.scrollLeft = (Number(horizontalRange.value) / 1000) * maximumScroll;
+      const availableTravel = Math.max(
+        1,
+        horizontalTrack.clientWidth - horizontalThumb.offsetWidth
+      );
+      const pointerMovement = event.clientX - startPointerX;
+
+      grid.scrollLeft = startScrollLeft
+        + pointerMovement * (maximumScroll / availableTravel) * 1.65;
+    });
+
+    const stopDragging = event => {
+      dragging = false;
+      if (horizontalThumb.hasPointerCapture?.(event.pointerId)) {
+        horizontalThumb.releasePointerCapture(event.pointerId);
+      }
+    };
+
+    horizontalThumb.addEventListener("pointerup", stopDragging);
+    horizontalThumb.addEventListener("pointercancel", stopDragging);
+
+    horizontalTrack.addEventListener("pointerdown", event => {
+      if (event.target === horizontalThumb) return;
+
+      const bounds = horizontalTrack.getBoundingClientRect();
+      const thumbWidth = horizontalThumb.offsetWidth;
+      const availableTravel = Math.max(1, bounds.width - thumbWidth);
+      const pointerPosition = Math.min(
+        Math.max(event.clientX - bounds.left - thumbWidth / 2, 0),
+        availableTravel
+      );
+      const maximumScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
+
+      grid.scrollLeft = (pointerPosition / availableTravel) * maximumScroll;
+      syncHorizontalThumb();
     });
 
     grid.addEventListener("wheel", event => {
@@ -169,7 +211,7 @@
       if (!movement) return;
 
       event.preventDefault();
-      grid.scrollLeft += movement * 2.8;
+      grid.scrollLeft += movement * 2.35;
     }, { passive: false });
   };
 
@@ -185,8 +227,6 @@
       return;
     }
 
-    horizontalScroll.hidden = false;
-
     const totalPages = pageCount();
     state.page = Math.min(Math.max(state.page, 1), totalPages);
     const start = (state.page - 1) * Number(config.itemsPerPage || 40);
@@ -199,39 +239,43 @@
       const node = template.content.cloneNode(true);
       const card = node.querySelector(".article-card");
       const title = node.querySelector(".card-title");
-      const titleText = node.querySelector(".card-title-text");
       const preview = node.querySelector(".card-summary");
       const date = node.querySelector(".card-date");
       const read = node.querySelector(".read-more");
 
-      const open = event => {
-        if (event && (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
-        event?.preventDefault();
-        openArticle(article, true);
-      };
+      const open = () => openArticle(article, true);
 
-      titleText.textContent = article.title;
+      title.textContent = article.title;
       preview.dataset.fullText = article.content || article.summary;
       preview.textContent = article.content || article.summary;
       date.textContent = formatDate(article.publishedAt);
       date.dateTime = article.publishedAt;
 
       card.dataset.articleId = article.id;
-      card.href = canonicalArticleUrl(article);
+      card.tabIndex = 0;
+      card.setAttribute("role", "button");
       card.setAttribute("aria-label", `Leer ${article.title}`);
       card.addEventListener("click", open);
-      read.setAttribute("aria-hidden", "true");
+      card.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          open();
+        }
+      });
+
+      read.addEventListener("click", event => {
+        event.stopPropagation();
+        open();
+      });
 
       grid.append(node);
     });
 
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        grid.querySelectorAll(".card-title").forEach(fitTitle);
-        grid.querySelectorAll(".card-summary").forEach(fitPreview);
-        grid.scrollLeft = 0;
-        syncHorizontalControl();
-      });
+      grid.querySelectorAll(".card-title").forEach(fitTitle);
+      grid.querySelectorAll(".card-summary").forEach(fitPreview);
+      grid.scrollLeft = 0;
+      syncHorizontalThumb();
     });
 
     indicator.textContent = `${state.page} / ${totalPages}`;
@@ -244,39 +288,20 @@
     );
   };
 
-  const siteRoot = () => `${String(config.siteUrl || new URL(".", window.location.href)).replace(/\/$/, "")}/`;
+  const canonicalArticleUrl = article => {
+    const configuredBase = config.publicationUrl || "./";
+    const base = new URL(configuredBase, window.location.href);
+    base.search = "";
+    base.hash = "";
 
-  const canonicalArticleUrl = article =>
-    `${siteRoot()}${String(config.articlePath || "noticias").replace(/^\/+|\/+$/g, "")}/${encodeURIComponent(article.slug)}/`;
-
-  const articleImageUrl = article =>
-    `${siteRoot()}${String(config.imagePath || "media/noticias").replace(/^\/+|\/+$/g, "")}/${encodeURIComponent(article.slug)}.svg`;
-
-  const sameOriginHistoryUrl = targetUrl => {
-    const target = new URL(targetUrl, window.location.href);
-    if (target.origin === window.location.origin) return target.toString();
-
-    const local = new URL(window.location.href);
-    local.search = "";
-    local.hash = "";
-    return local.toString();
-  };
-
-  const slugFromLocation = () => {
-    const url = new URL(window.location.href);
-    const querySlug = url.searchParams.get("article");
-    if (querySlug) return querySlug;
-
-    try {
-      const rootPath = new URL(siteRoot()).pathname.replace(/\/$/, "");
-      const relative = url.pathname.startsWith(rootPath)
-        ? url.pathname.slice(rootPath.length)
-        : url.pathname;
-      const match = relative.match(/^\/?noticias\/([^/]+)\/?$/);
-      return match ? decodeURIComponent(match[1]) : null;
-    } catch {
-      return null;
+    if (!base.pathname.endsWith("/")) {
+      base.pathname += "/";
     }
+
+    return new URL(
+      `noticias/${encodeURIComponent(article.slug)}/`,
+      base
+    ).toString();
   };
 
   const openModal = html => {
@@ -291,15 +316,20 @@
     modalLayer.hidden = true;
     document.body.classList.remove("modal-open");
     modalContent.replaceChildren();
+    document.title = config.publicationName || "Líneas Ópticas";
 
     if (clearUrl) {
-      history.replaceState({}, "", sameOriginHistoryUrl(siteRoot()));
+      const url = new URL(window.location.href);
+      url.searchParams.delete("article");
+      history.replaceState({}, "", url);
     }
   };
 
   const openArticle = (article, updateUrl = false) => {
     const shareUrl = canonicalArticleUrl(article);
-    const imageUrl = articleImageUrl(article);
+    document.title = article.title;
+    const encodedUrl = encodeURIComponent(shareUrl);
+    const encodedText = encodeURIComponent(article.title);
     const shareDescription = cleanPreviewText(article.content).slice(0, 180);
 
     openModal(`
@@ -310,44 +340,28 @@
         <section class="share-panel" aria-label="Compartir noticia">
           <div class="share-actions">
             <button class="share-action" id="nativeShare" type="button">compartir</button>
-            <button class="share-image-button" id="imageShare" type="button" aria-label="Compartir ${escapeHtml(article.title)}">
-              <img class="share-image" src="${escapeHtml(imageUrl)}" width="1200" height="1200"
-                alt="Composición tipográfica del titular ${escapeHtml(article.title)}">
-            </button>
             <button class="share-action" id="copyLink" type="button">copiar link</button>
+            <a class="share-action" target="_blank" rel="noopener noreferrer"
+              href="https://wa.me/?text=${encodedText}%20${encodedUrl}">whatsapp</a>
           </div>
         </section>
       </article>
     `);
 
     if (updateUrl) {
-      const target = new URL(shareUrl);
-      const historyUrl = target.origin === window.location.origin
-        ? shareUrl
-        : `${sameOriginHistoryUrl(siteRoot())}?article=${encodeURIComponent(article.slug)}`;
-      history.pushState({ article: article.slug }, "", historyUrl);
+      history.pushState({ article: article.slug }, "", shareUrl);
     }
 
-    const copyButton = document.querySelector("#copyLink");
-    const shareButtons = [
-      document.querySelector("#nativeShare"),
-      document.querySelector("#imageShare")
-    ];
-
-    const copyLink = async button => {
+    document.querySelector("#copyLink").addEventListener("click", async event => {
       try {
         await navigator.clipboard.writeText(shareUrl);
-        const previous = button.textContent;
-        button.textContent = "link copiado";
-        window.setTimeout(() => { button.textContent = previous; }, 1800);
+        event.currentTarget.textContent = "link copiado";
       } catch {
         window.prompt("Copia este enlace:", shareUrl);
       }
-    };
+    });
 
-    copyButton.addEventListener("click", () => copyLink(copyButton));
-
-    shareButtons.forEach(button => button.addEventListener("click", async () => {
+    document.querySelector("#nativeShare").addEventListener("click", async event => {
       try {
         if (navigator.share) {
           await navigator.share({
@@ -356,12 +370,13 @@
             url: shareUrl
           });
         } else {
-          await copyLink(document.querySelector("#nativeShare"));
+          await navigator.clipboard.writeText(shareUrl);
+          event.currentTarget.textContent = "link copiado";
         }
       } catch (error) {
         if (error?.name !== "AbortError") console.error(error);
       }
-    }));
+    });
   };
 
   const openSearch = () => {
@@ -398,20 +413,18 @@
 
       results.innerHTML = matches.length
         ? matches.map(article => `
-            <a class="result-item" href="${escapeHtml(canonicalArticleUrl(article))}" data-id="${escapeHtml(article.id)}">
+            <button class="result-item" type="button" data-id="${escapeHtml(article.id)}">
               <strong>${escapeHtml(article.title)}</strong>
               <time>${formatDate(article.publishedAt)}</time>
-            </a>
+            </button>
           `).join("")
         : query
           ? "<p>NO HAY RESULTADOS.</p>"
           : "<p>ESCRIBE PARA BUSCAR.</p>";
 
-      results.querySelectorAll("[data-id]").forEach(link => {
-        link.addEventListener("click", event => {
-          if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-          event.preventDefault();
-          const article = state.all.find(item => item.id === link.dataset.id);
+      results.querySelectorAll("[data-id]").forEach(button => {
+        button.addEventListener("click", () => {
+          const article = state.all.find(item => item.id === button.dataset.id);
           if (article) openArticle(article, true);
         });
       });
@@ -467,7 +480,7 @@
       status.textContent = "";
       render();
 
-      const slug = slugFromLocation();
+      const slug = new URL(window.location.href).searchParams.get("article");
       if (slug) {
         const article = state.all.find(
           item => item.slug === slug || item.id === slug
@@ -476,25 +489,6 @@
       }
     } catch (error) {
       console.error(error);
-
-      // La portada compilada ya contiene las noticias en HTML. Si el JSON no
-      // puede cargarse (por ejemplo, al abrir index.html directamente desde
-      // el disco), se conserva ese contenido en lugar de dejar la web vacía.
-      const staticCards = grid.querySelectorAll(".article-card");
-      if (staticCards.length) {
-        status.textContent = "";
-        horizontalScroll.hidden = window.innerWidth < 740;
-        indicator.textContent = "1 / 1";
-        prev.disabled = true;
-        next.disabled = true;
-        requestAnimationFrame(() => {
-          grid.querySelectorAll(".card-title").forEach(fitTitle);
-          grid.querySelectorAll(".card-summary").forEach(fitPreview);
-          syncHorizontalControl();
-        });
-        return;
-      }
-
       status.textContent = "NO SE PUDO LEER LA API.";
       grid.innerHTML = `
         <div class="empty">
@@ -544,7 +538,7 @@
   });
 
   window.addEventListener("popstate", () => {
-    const slug = slugFromLocation();
+    const slug = new URL(window.location.href).searchParams.get("article");
 
     if (!slug) {
       closeModal({ clearUrl: false });
@@ -557,12 +551,12 @@
     if (article) openArticle(article, false);
   });
 
-  grid.addEventListener("scroll", syncHorizontalControl, { passive: true });
+  grid.addEventListener("scroll", syncHorizontalThumb, { passive: true });
 
   window.addEventListener("resize", () => {
     grid.querySelectorAll(".card-title").forEach(fitTitle);
     grid.querySelectorAll(".card-summary").forEach(fitPreview);
-    syncHorizontalControl();
+    syncHorizontalThumb();
   });
 
   enableHorizontalControls();

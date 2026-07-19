@@ -1,9 +1,6 @@
 window.LINEAS_OPTICAS_CONFIG = {
-  // El JSON sigue siendo la fuente única de noticias.
+  // Puede ser un JSON local o una URL HTTPS con CORS habilitado.
   apiUrl: "./data/news.json",
-  siteUrl: "https://ipesoa.github.io/lineasopticas",
-  articlePath: "noticias",
-  imagePath: "media/noticias",
   itemsPerPage: 40,
 
   stripe: {
@@ -11,5 +8,6 @@ window.LINEAS_OPTICAS_CONFIG = {
     monthlyUrl: "https://buy.stripe.com/00wcN67Mn3qq2sRb81gfu04"
   },
 
-  publicationName: "Líneas Ópticas"
+  publicationName: "Líneas Ópticas",
+  publicationUrl: "https://ipesoa.github.io/lineasopticas/"
 };

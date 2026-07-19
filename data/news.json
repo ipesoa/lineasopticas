@@ -2,6 +2,62 @@
   "version": 1,
   "articles": [
     {
+      "id": "capitalizar-el-tiempo",
+      "slug": "capitalizar-el-tiempo",
+      "title": "Capitalizar el tiempo",
+      "summary": "Cuando la eficacia se convierte en moral, pensar empieza a parecer una pérdida improductiva.",
+      "content": "El tiempo contemporáneo ya no se limita a pasar: debe justificar su existencia.\n\nCada hora parece obligada a convertirse en rendimiento, aprendizaje, visibilidad o dinero. Incluso el descanso se administra como una inversión destinada a producir mejor al día siguiente.\n\nLa cuestión política comienza cuando disponer de tiempo sin rendimiento deja de ser una experiencia corriente y se convierte en privilegio. Pensar exige demora, tanteo, repetición y momentos que, desde la lógica productiva, parecen inútiles.\n\nDefender ese tiempo no consiste en romantizar la pereza. Consiste en impedir que toda la vida quede traducida al idioma de la utilidad.",
+      "publishedAt": "2026-07-19T18:30:00+02:00",
+      "featured": true,
+      "tags": [
+        "tiempo",
+        "trabajo",
+        "ensayo"
+      ],
+      "hiddenTags": [
+        "productividad",
+        "capitalismo",
+        "ocio"
+      ]
+    },
+    {
+      "id": "soberania-sin-eleccion",
+      "slug": "soberania-sin-eleccion",
+      "title": "Soberanía sin elección",
+      "summary": "Una ciudadanía que solo escoge administradores, pero no interviene sobre las leyes, conserva el voto y pierde soberanía.",
+      "content": "La democracia representativa suele identificar la soberanía popular con la capacidad periódica de elegir gobernantes.\n\nSin embargo, esa definición deja intacta una pregunta incómoda: ¿qué poder conserva la ciudadanía sobre las normas que organizan su existencia?\n\nCuando las decisiones sustantivas quedan cerradas antes de toda deliberación, el voto selecciona gestores de un marco que no puede cuestionarse. La soberanía se conserva como fórmula jurídica mientras se vacía como práctica política.",
+      "publishedAt": "2026-07-19T16:05:00+02:00",
+      "featured": true,
+      "tags": [
+        "política",
+        "soberanía"
+      ],
+      "hiddenTags": [
+        "Rousseau",
+        "oligarquía",
+        "democracia"
+      ]
+    },
+    {
+      "id": "la-calle-como-imprenta",
+      "slug": "la-calle-como-imprenta",
+      "title": "La calle como imprenta",
+      "summary": "Un papel pequeño puede operar como una interrupción física dentro del flujo automatizado de imágenes.",
+      "content": "La octavilla no compite con la velocidad de una red social. Su fuerza está precisamente en carecer de esa velocidad.\n\nAparece como objeto, ocupa un lugar, puede doblarse, perderse o conservarse. No pide una cuenta ni mide cuánto tiempo permanece la mirada sobre ella.\n\nLa distribución callejera no garantiza lectores; produce encuentros. A veces ese margen de incertidumbre es más valioso que una métrica precisa.",
+      "publishedAt": "2026-07-18T23:12:00+02:00",
+      "featured": false,
+      "tags": [
+        "edición",
+        "calle",
+        "papel"
+      ],
+      "hiddenTags": [
+        "octavillas",
+        "panfleto",
+        "distribución"
+      ]
+    },
+    {
       "id": "contra-la-novedad",
       "slug": "contra-la-novedad",
       "title": "Contra la novedad",
@@ -16,193 +72,7 @@
       "hiddenTags": [
         "periodismo",
         "velocidad"
-      ],
-      "seoTitle": "Contra la novedad",
-      "metaDescription": "La actualidad no siempre describe lo nuevo; a menudo solo señala aquello que ha conseguido imponerse durante unas horas.",
-      "updatedAt": "2026-07-18T20:40:00+02:00",
-      "author": "Líneas Ópticas",
-      "authorType": "Organization",
-      "section": "Medios",
-      "sources": [],
-      "language": "es",
-      "status": "published"
-    },
-    {
-      "title": "El intervalo de Madonna",
-      "seoTitle": "Final Mundial 2026: el fútbol como intervalo del espectáculo",
-      "summary": "La final Argentina-España en East Rutherford expone un experimento: el fútbol subordinado al entretenimiento, con pausa de 30 minutos, entradas inalcanzables y humo climático.",
-      "metaDescription": "Análisis de la final del Mundial 2026 entre Argentina y España: la pausa de 30 minutos para el show, los precios exorbitantes y el humo de incendios revelan un.",
-      "content": "El fútbol se detiene media hora para que Madonna y BTS actúen. La final del Mundial 2026 entre Argentina y España en East Rutherford no es la cima de la competición deportiva: es el laboratorio donde el deporte se subordina al entretenimiento. Una pausa de treinta minutos, inédita en la historia de las finales, convierte el partido definitorio del planeta en el intervalo de un concierto. El juego es el relleno entre actuaciones.\n\nEl evento se presenta como la culminación del primer Mundial de 48 equipos, repartido entre tres países. Pero el formato expandido y la sede trinacional son la coartada perfecta para un experimento mayor: si el fútbol puede funcionar como excusa para un producto de entretenimiento global. La FIFA y sus socios comerciales obtienen la autoridad de reescribir las reglas de la competición sin que la cobertura dominante lo señale como una anomalía. El show de medio tiempo con Shakira, Dudamel y superestrellas del pop no es un adorno: es el núcleo del producto.\n\nArgentina llega con 19 goles a favor y 13 partidos invictos en Mundiales. España recibió un solo gol en todo el torneo. La cobertura deportiva reduce el partido a un duelo de estilos y al hito personal de Messi disputando su tercera final a los 39 años. Todos los actores del relato, desde la AFA hasta los medios, comparten una premisa: el partido es el evento. Pero si el partido se detiene media hora para un show, esa premisa colapsa. El evento no es el partido: el partido es parte del evento.\n\nLa contradicción es visible. Se celebra el fútbol como el juego del pueblo mientras los precios de las entradas son exorbitantes y el acceso físico queda reservado a una élite. Se habla de la pureza de la competición mientras una pausa comercial de 30 minutos altera la dinámica competitiva, el descanso físico y la estrategia técnica. Y mientras se planifica el espectáculo más controlado del planeta, el humo de incendios en Nueva York recuerda que ni el evento más diseñado escapa a la crisis ambiental. La cobertura tradicional ignora estos factores porque no encajan en el guion épico.\n\nExaminemos el prisma contrario. Si la pausa de 30 minutos es legítima, hay que aceptar que el fútbol moderno ya no es un deporte autónomo: es un formato híbrido donde el entretenimiento es la competencia real. Los partidos no compiten solo con otros partidos: compiten con los Grammy, con los streams, con la atención global. Bajo esta lógica, la final de 2026 no degrada el fútbol: lo actualiza. Lo que se rompe no es el juego, sino la ficción de que el juego era el centro.\n\nLa consecuencia es que la final de 2026 establece un estándar. Si el experimento funciona, si la audiencia global acepta el partido como intervalo del show y el show como atracción principal, no habrá marcha atrás. Las próximas finales no se medirán por los goles o por el nivel deportivo, sino por el calibre de los artistas del medio tiempo. Lo que queda oculto es el costo: no solo el de las entradas, sino el de un deporte que deja de pertenecerse para pertenecer al mercado del entretenimiento total.\n\nEl resultado del partido es el único detalle que el capitalismo del espectáculo aún no controla.",
-      "publishedAt": "2026-07-19T11:47:12+02:00",
-      "updatedAt": "2026-07-19T11:47:12+02:00",
-      "author": "Líneas Ópticas",
-      "authorType": "Organization",
-      "section": "Deportes",
-      "featured": false,
-      "tags": [
-        "Mundial 2026",
-        "Argentina vs España",
-        "FIFA",
-        "entretenimiento",
-        "Messi",
-        "fútbol",
-        "show de medio tiempo",
-        "capitalismo deportivo"
-      ],
-      "hiddenTags": [
-        "Copa del Mundo 2026",
-        "final East Rutherford",
-        "Madonna BTS Shakira",
-        "precios entradas Mundial",
-        "humo incendios Nueva York",
-        "Scaloni",
-        "selección argentina",
-        "selección española",
-        "bicampeonato mundial",
-        "Messi tercera final",
-        "Copa Mundial de Fútbol",
-        "Copa Mundial de Fútbol de 2010",
-        "Copa Mundial de Fútbol de 2014",
-        "Copa Mundial de Fútbol de 2018",
-        "Copa Mundial de Fútbol de 2022",
-        "Copa Mundial de Fútbol de 2026",
-        "Copa Mundial de Fútbol de 2030",
-        "Final de la Copa Mundial de Fútbol de 2026",
-        "final de la copa del mundo 2026",
-        "world_cup_2026",
-        "AR",
-        "WIKI_ES"
-      ],
-      "sources": [
-        {
-          "name": "Clarin.com",
-          "url": "https://www.clarin.com/deportes/argentina-vs-espana-final-mundial-2026-vivo-hora-formaciones-ver-partido_0_t5FchVNNHK.html"
-        },
-        {
-          "name": "AFA",
-          "url": "https://www.afa.com.ar/es/posts/argentina-y-espana-un-unico-antecedente-mundialista-que-favorece-a-la-albiceleste"
-        },
-        {
-          "name": "Fuente consultada",
-          "url": "https://www.afa.com.ar/es/posts/argentina-y-espana-un-unico-antecedente-mundista-que-favorece-a-la-albiceleste"
-        }
-      ],
-      "language": "es",
-      "status": "published",
-      "id": "el-intervalo-de-madonna",
-      "slug": "el-intervalo-de-madonna"
-    },
-    {
-      "title": "El parpadeo del prestigio en el Fürstenhof",
-      "seoTitle": "Sturm der Liebe: el cebo publicitario de Daniela Ziegler",
-      "summary": "El anuncio de tres fichajes para 'Sturm der Liebe' revela cómo la telenovela usa el prestigio teatral como gancho efímero para un rol de cinco semanas.",
-      "metaDescription": "Análisis del anuncio de Bavaria Fiction para 'Sturm der Liebe' y el uso de Daniela Ziegler como gancho publicitario para un rol invitado de cinco semanas.",
-      "content": "Bavaria Fiction ha anunciado tres nuevos fichajes para la telenovela diaria de la ARD \"Sturm der Liebe\": Jaime Ferkic, Hannah Werner y Daniela Ziegler. El revuelo es el esperado en cualquier cambio de reparto, pero la operación revela una mecánica más precisa: la utilización del prestigio cultural de una veterana ilustre como cebo publicitario para un rol de apenas cinco semanas. La cobertura agrupa a los tres actores bajo el mismo paraguas promocional, ocultando que dos tienen contratos fijos y una es carne de guest star.\n\nEl contexto de la ficción exige este movimiento. Tras el parón de verano, la serie necesita reactivar la audiencia con la resolución de un cliffhanger: el verdadero Massimo Foghetti despierta del coma y reclama la identidad que Adam Fischer le robó. Para sostener esta tensión narrativa, la productora requiere la máxima visibilidad. Al colocar el nombre de Ziegler junto a los debutantes, Bavaria Fiction y la ARD obtienen una coartada de prestigio que enmascara un simple giro de guion y garantiza titulares en medios generalistas.\n\nLas posiciones de los actores en la prensa son de gratitud mutua y entusiasmo, pero todos operan bajo una premisa compartida y silenciada: la jerarquía artística es perfectamente transferible a métricas de tráfico. Werner celebra su primer gran papel televisivo, Ferkic asume el peso del protagonista, y Ziegler valora la experiencia temporal en la \"familia\" de la serie. Nadie cuestiona que el formato necesita vender la ilusión de un fichaje estelar cuando, en realidad, se trata de un préstamo breve.\n\nAquí emerge el doble estándar. Los titulares promocionan a los tres como \"Neuzugänge\" (incorporaciones) que causan \"Wirbel\" (revuelo) en el Fürstenhof, el escenario de la serie. Sin embargo, la realidad contractual desarma este marco: Ferkic y Werner son personajes duraderos, mientras que Ziegler es explícitamente una \"Gastrolle\". La veterana con cinco décadas de carrera en el musical y el teatro alemán, desde \"Evita\" hasta \"Sunset Boulevard\", se presenta en los titulares al mismo nivel que una actriz en su primer rol televisivo. La promoción iguala lo desigual para maximizar el alcance.\n\nExaminemos el prisma contrario. En lugar de victimizar a la actriz relegada, conviene tomar en serio la lógica del trueque. La cadena necesita un gancho de prestigio; Ziegler acepta canjear su legado por exposición masiva en el horario de sobremesa. Es una transacción pura y simétrica. La productora compra crédito cultural a corto plazo, y la actriz obtiene visibilidad ante un público diurno que quizás no pisa los teatros donde ella acumula su autoridad. La operación no es un accidente que desprecie el talento, sino un cálculo donde el prestigio se transacciona como un activo más.\n\nLa consecuencia directa es la especulación no resuelta. Mientras los fans debaten si Massimo formará la nueva pareja protagonista con Frida o si se enamorará de Olivia, la trama principal se resolverá en torno al conflicto del usurpador y el sumiller. El personaje de Ziegler, la madre del falso Massimo, funciona como mero dispositivo emocional para el clímax del engaño. Una vez que la usurpación se resuelva, la actriz abandonará el plató. Lo que queda oculto es el coste: la inflación artificial de un anuncio que confunde la permanencia con el préstamo.\n\nEl verdadero usurpador de identidades no es solo el personaje de Adam Fischer infiltrándose en la familia Saalfeld. El robo lo ejecuta la lógica de mercado de la telenovela, que vacía de sustancia la jerarquía cultural para rellenar un hueco estacional. El caso obliga a reconsiderar qué se celebra cuando se celebra un fichaje: si el talento que llega al Fürstenhof o el cynicism con el que se le usa.",
-      "publishedAt": "2026-07-19T11:47:12+02:00",
-      "updatedAt": "2026-07-19T11:47:12+02:00",
-      "author": "Líneas Ópticas",
-      "authorType": "Organization",
-      "section": "Cultura",
-      "featured": false,
-      "tags": [
-        "Sturm der Liebe",
-        "Daniela Ziegler",
-        "ARD",
-        "Bavaria Fiction",
-        "telenovela",
-        "casting",
-        "televisión alemana",
-        "cultura"
-      ],
-      "hiddenTags": [
-        "Tormenta de amor",
-        "Fürstenhof",
-        "Jaime Ferkic",
-        "Hannah Werner",
-        "Massimo Foghetti",
-        "Adam Fischer",
-        "telenovela ARD",
-        "Neuzugänge",
-        "daniela ziegler sturm der liebe",
-        "culture_daniela_ziegler_sturm_der_liebe_7786eafc",
-        "DE"
-      ],
-      "sources": [
-        {
-          "name": "Joyn",
-          "url": "https://www.joyn.de/bts/serien/sturm-der-liebe/neues-traumpaar-fans-diskutieren-ueber-die-drei-neuzugaenge-156479"
-        },
-        {
-          "name": "T-Online",
-          "url": "https://www.t-online.de/unterhaltung/tv/id_101346182/-sturm-der-liebe-das-ist-neu-bei-der-ard-telenovela-.html"
-        },
-        {
-          "name": "Bavaria Fiction GmbH",
-          "url": "https://www.bavaria-fiction.de/newsroom/neuzugaenge-jaime-ferkic-hannah-werner-und-daniela-ziegler-sturm-der-liebe"
-        }
-      ],
-      "language": "es",
-      "status": "published",
-      "id": "el-parpadeo-del-prestigio-en-el-furstenhof",
-      "slug": "el-parpadeo-del-prestigio-en-el-furstenhof"
-    },
-    {
-      "title": "El festivo que no existe",
-      "seoTitle": "Festivo 28 de julio: el falso puente nacional que solo existe en.",
-      "summary": "El BOE confirma que el 28 de julio es festivo exclusivo de Cantabria, pero los medios lo venden como un puente nacional con un plural engañoso para captar clics.",
-      "metaDescription": "El 28 de julio es festivo solo en Cantabria, pero Heraldo y OkDiario usan el plural para sugerir que el puente afecta a varias comunidades. Análisis del truco.",
-      "content": "El BOE ha confirmado lo que ya estaba confirmado: que el 28 de julio es festivo en Cantabria. La noticia, sin embargo, se ha publicado con un plural que la desmiente. Heraldo anuncia \"el puente en estas comunidades autónomas de España\". OkDiario promete que \"habrá puente en estas comunidades\". Solo hay una comunidad. Solo hay un festivo. Y el puente no existe: depende de que cada trabajador decida tomarse el lunes por su cuenta. La operación es tan visible como eficaz: convertir un dato local en un señuelo nacional para captar clics de millones de personas que nunca tendrán ese descanso.\n\nEl calendario laboral español contempla catorce festivos: nueve comunes, dos o tres autonómicos, dos o tres locales. Esa fragmentación —que es la forma institucional de un país compuesto— se convierte cada verano en materia prima para un género periodístico específico: la promesa de puente. El beneficiario no es el trabajador de Cantabria, que ya sabía que le tocaba. El beneficiario es el medio que necesita tráfico estacional y ha encontrado en la ambigüedad geográfica una técnica fiable de captación.\n\nEl Gobierno de Cantabria promueve el Día de las Instituciones como conmemoración histórica: la constitución de la provincia en 1778, la Casa de Juntas de Puente San Miguel. El BOE publica el calendario. Los medios lo amplifican. Nadie discute los hechos. Pero todos operan bajo una premisa compartida que nadie enuncia: el calendario laboral no es una herramienta de organización, sino una promesa de descanso que se puede vender como expectativa. La conmemoración histórica desaparece bajo la utilidad del puente, y la utilidad del puente se infla con un plural que la realidad no sostiene.\n\nLa contradicción está dentro del propio texto. OkDiario reconoce en el cuerpo del artículo que \"cada año genera cierta confusión porque el calendario no es el mismo en todo el país\". Es decir: el medio sabe que la confusión existe, la describe como un problema recurrente y, en el mismo artículo, la alimenta con un titular que usa el plural para sugerir que el festivo afecta a varias comunidades. No es un descuido. Es una estructura: el titular amplifica la confusión que el cuerpo del texto se limita a constatar. El lector que entra buscando su puente encuentra una explicación de por qué no le corresponde. El clic ya se ha contabilizado.\n\nConviene examinar el truco con seriedad. Los medios no mienten sobre la existencia del festivo: el 28 de julio es festivo en Cantabria. No inventan el puente: lo condicionan a la decisión del trabajador. Lo que falsifican es el alcance. El plural \"comunidades\" no es un error gramatical: es una operación de mercado. Si la función social de la prensa es informar decisiones ciudadanas —planificar descanso, organizar viajes, calcular jornadas—, un titular que genera confusión masiva cumple la función opuesta. Desinforma para rentabilizar la atención. Y lo hace con la garantía de que nadie reclamará: el lector que se siente engañado no denuncia, simplemente cierra la pestaña.\n\nLo que queda oculto es el coste de este ciclo. Cada año, millones de trabajadores de fuera de Cantabria se informan sobre un festivo que no les afecta, consumen un artículo que les aclara que no les afecta y vuelven a caer al año siguiente. La fragmentación del calendario, que debería ser una expresión de la diversidad regional, se convierte en un mecanismo de captación de audiencia. La conmemoración de 1778 queda reducida a un pretexto para hablar de puentes. Y la confianza en la información de utilidad pública se erosiona sin que nadie la midan, porque el clic compensa todo.\n\nLa pregunta no es si el 28 de julio es festivo. Eso lo sabe el BOE, lo sabe Cantabria y lo saben los medios que lo publican. La pregunta es por qué un país entero necesita creer cada año que podría serlo. Y por qué los medios necesitan que lo crea.",
-      "publishedAt": "2026-07-19T11:47:12+02:00",
-      "updatedAt": "2026-07-19T11:47:12+02:00",
-      "author": "Líneas Ópticas",
-      "authorType": "Organization",
-      "section": "Sociedad",
-      "featured": false,
-      "tags": [
-        "festivo",
-        "Cantabria",
-        "calendario laboral",
-        "clickbait",
-        "BOE",
-        "28 de julio",
-        "medios de comunicación",
-        "puente"
-      ],
-      "hiddenTags": [
-        "día de las instituciones de cantabria",
-        "festivos autonómicos 2026",
-        "calendario laboral españa 2026",
-        "puente 28 de julio",
-        "festivos julio 2026",
-        "BOE festivos",
-        "titulares engañosos",
-        "clickbait medios",
-        "28 de julio",
-        "entertainment_28_de_julio_9bded33a",
-        "ES"
-      ],
-      "sources": [
-        {
-          "name": "heraldo.es",
-          "url": "https://www.heraldo.es/noticias/nacional/2026/07/19/ya-es-oficial-boe-confirma-festivo-28-julio-puente-estas-comunidades-autonomas-espana-2026-2037698.html"
-        },
-        {
-          "name": "OkDiario",
-          "url": "https://okdiario.com/economia/boe-hace-oficial-28-julio-sera-festivo-habra-puente-estas-comunidades-espana-18994363"
-        },
-        {
-          "name": "Time Out Worldwide",
-          "url": "https://www.timeout.es/madrid/es/noticias/concierto-gratis-en-un-rincon-de-ensueno-de-la-sierra-de-madrid-este-verano-vuelve-musica-en-cada-rincon-071826"
-        },
-        {
-          "name": "Fuente consultada",
-          "url": "https://okdiario.com/economia/boe-lo-hace-oficial-28-julio-sera-festivo-habra-puente-estas-comunidades-espana-18994363"
-        }
-      ],
-      "language": "es",
-      "status": "published",
-      "id": "el-festivo-que-no-existe",
-      "slug": "el-festivo-que-no-existe"
+      ]
     }
   ]
 }

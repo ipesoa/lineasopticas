@@ -1,14 +1,85 @@
-LÍNEAS ÓPTICAS — API PARA LA IA
-================================
+FORMATO DE NOTICIAS PARA LA IA
+==============================
 
-El contrato vigente está documentado en:
-ORDENES_IA_GENERADOR_SEO_SVG.txt
+La IA debe enviar las noticias en UTF-8, preferentemente como JSON o JSONL.
 
-Resumen:
-- La IA envía únicamente JSON o JSONL UTF-8.
-- El token va solo en Authorization: Bearer TU_TOKEN.
-- No enviar HTML ni SVG dentro de content.
-- Para altas se requieren title, seoTitle, summary, metaDescription, content,
-  publishedAt, updatedAt, author, authorType, section, featured, tags,
-  hiddenTags, sources, language y status.
-- GitHub Actions crea páginas HTML, sitemap, RSS y SVG automáticamente.
+REGLAS DEL CONTENIDO
+--------------------
+- El titular debe ser corto, directo y apto para una sola línea.
+- Preferencia: entre 3 y 7 palabras.
+- Longitud aconsejada del titular: máximo 55 caracteres.
+- El artículo debe contener como mínimo 8 líneas.
+- No existe un máximo rígido, pero debe evitarse una extensión innecesaria.
+- Extensión recomendada: entre 8 y 40 líneas.
+- La portada muestra directamente el comienzo de content, nunca un resumen separado.
+- La portada recorta el artículo después de 8 líneas visuales y añade puntos suspensivos.
+- No enviar HTML.
+- Las etiquetas sirven para la búsqueda y no se muestran al lector.
+
+FORMATO RECOMENDADO
+-------------------
+{
+  "action": "add",
+  "title": "Titular corto",
+  "content": "Primera línea.\nSegunda línea.\nTercera línea.\nCuarta línea.\nQuinta línea.\nSexta línea.\nSéptima línea.\nOctava línea.",
+  "publishedAt": "2026-07-19T20:30:00+02:00",
+  "featured": false,
+  "tags": ["cultura", "política"],
+  "hiddenTags": ["sinónimo", "tema relacionado"]
+}
+
+VARIAS NOTICIAS
+---------------
+{
+  "articles": [
+    {
+      "action": "add",
+      "title": "Primer titular",
+      "content": "Artículo completo con un mínimo de 8 líneas.",
+      "publishedAt": "2026-07-19T20:30:00+02:00",
+      "featured": false,
+      "tags": ["etiqueta"],
+      "hiddenTags": ["palabra de búsqueda"]
+    }
+  ]
+}
+
+JSONL
+-----
+Una noticia por línea, sin corchetes y sin comas entre noticias:
+
+{"action":"add","title":"Titular corto","content":"Texto completo con al menos 8 líneas.","publishedAt":"2026-07-19T20:30:00+02:00","featured":false,"tags":["cultura"],"hiddenTags":[]}
+
+ACCIONES
+--------
+- Nueva noticia: "action": "add"
+- Corregir: "action": "update" e "id": "identificador-existente"
+- Eliminar: "action": "delete" e "id": "identificador-existente"
+
+No inventar un id al actualizar o eliminar.
+
+TOKEN
+-----
+Enviar el token únicamente en la cabecera:
+
+Authorization: Bearer TU_TOKEN
+
+Nunca incluir el token dentro del JSON, del artículo o de un archivo .txt.
+
+La respuesta debe contener únicamente los datos. No añadir explicaciones,
+comentarios ni bloques Markdown fuera del formato elegido.
+
+ENLACES COMPARTIBLES Y SVG
+--------------------------
+Después de añadir, actualizar o eliminar noticias en data/news.json, ejecutar:
+
+    python scripts/generate_share_pages.py
+
+Este paso genera:
+- noticias/<slug>/index.html: enlace compartible con el titular y el texto de la noticia.
+- share/<slug>.svg: imagen en MAYÚSCULAS, dividida matemáticamente, Arial Bold Italic.
+- share/<slug>.png: versión compatible con WhatsApp y redes sociales.
+
+La IA debe subir también las carpetas noticias y share generadas. No debe subir
+únicamente news.json. Al abrir un enlace compartido, la página redirige a la portada
+y abre la noticia dentro del popup, que se cierra con la X.
