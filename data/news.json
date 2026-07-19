@@ -2,34 +2,6 @@
   "version": 1,
   "articles": [
     {
-      "id": "la-calle-como-imprenta",
-      "slug": "la-calle-como-imprenta",
-      "title": "La calle como imprenta",
-      "summary": "Un papel pequeño puede operar como una interrupción física dentro del flujo automatizado de imágenes.",
-      "content": "La octavilla no compite con la velocidad de una red social. Su fuerza está precisamente en carecer de esa velocidad.\n\nAparece como objeto, ocupa un lugar, puede doblarse, perderse o conservarse. No pide una cuenta ni mide cuánto tiempo permanece la mirada sobre ella.\n\nLa distribución callejera no garantiza lectores; produce encuentros. A veces ese margen de incertidumbre es más valioso que una métrica precisa.",
-      "publishedAt": "2026-07-18T23:12:00+02:00",
-      "featured": false,
-      "tags": [
-        "edición",
-        "calle",
-        "papel"
-      ],
-      "hiddenTags": [
-        "octavillas",
-        "panfleto",
-        "distribución"
-      ],
-      "seoTitle": "La calle como imprenta",
-      "metaDescription": "Un papel pequeño puede operar como una interrupción física dentro del flujo automatizado de imágenes.",
-      "updatedAt": "2026-07-18T23:12:00+02:00",
-      "author": "Líneas Ópticas",
-      "authorType": "Organization",
-      "section": "Edición",
-      "sources": [],
-      "language": "es",
-      "status": "published"
-    },
-    {
       "id": "contra-la-novedad",
       "slug": "contra-la-novedad",
       "title": "Contra la novedad",
