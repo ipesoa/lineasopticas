@@ -747,3 +747,78 @@ body.modal-open { overflow: hidden; }
   margin: 12px 0 0;
   font-size: 0.9rem;
 }
+
+/* SOFISTA_POPUP_V04413 */
+html, body, button, input, textarea, select,
+.article-modal-title, .article-body, .article-body p,
+.modal-content, .share-action, .related-news-link {
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.article-modal-title {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.article-body {
+  font-size: clamp(18px, 2.1vw, 24px);
+  line-height: 1.38;
+}
+
+.article-body p {
+  margin: 0 0 1.25em;
+}
+
+.title-composition {
+  margin: 28px 0 0;
+  padding: 22px 0 0;
+  border-top: 1px solid currentColor;
+}
+
+.title-composition img {
+  display: block;
+  width: min(224px, 62vw);
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.related-news {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 28px;
+  border-top: 2px solid currentColor;
+}
+
+.related-news-link {
+  display: block;
+  min-width: 0;
+  padding: 14px 14px 16px 0;
+  border-bottom: 1px solid currentColor;
+  color: inherit;
+  font-size: clamp(15px, 1.7vw, 20px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -.025em;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.related-news-link + .related-news-link {
+  padding-left: 14px;
+  border-left: 1px solid currentColor;
+}
+
+@media (max-width: 720px) {
+  .related-news {
+    grid-template-columns: 1fr;
+  }
+
+  .related-news-link,
+  .related-news-link + .related-news-link {
+    padding: 13px 0;
+    border-left: 0;
+  }
+}
+
