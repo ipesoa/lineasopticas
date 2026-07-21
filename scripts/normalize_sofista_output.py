@@ -16,7 +16,7 @@ except ImportError as error:
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE_URL = "https://ipesoa.github.io/lineasopticas/"
-FRONTEND_VERSION = "20260721-3"
+FRONTEND_VERSION = "20260721-4"
 PNG_SIZE = (1200, 1200)
 
 
@@ -85,6 +85,35 @@ def normalize_frontend() -> int:
 def load_articles() -> list[dict]:
     raw = json.loads((ROOT / "data" / "news.json").read_text(encoding="utf-8"))
     return raw if isinstance(raw, list) else raw.get("articles", [])
+
+
+def remove_redundant_assets() -> int:
+    redundant_files = list((ROOT / "noticias").rglob("*.png"))
+    legacy_share = ROOT / "share"
+    if legacy_share.exists():
+        redundant_files.extend(path for path in legacy_share.rglob("*") if path.is_file())
+
+    for path in redundant_files:
+        path.unlink()
+
+    removable_directories = [
+        path
+        for path in (ROOT / "noticias").rglob("*")
+        if path.is_dir()
+    ]
+    if legacy_share.exists():
+        removable_directories.extend(
+            path for path in legacy_share.rglob("*") if path.is_dir()
+        )
+        removable_directories.append(legacy_share)
+
+    for path in sorted(removable_directories, key=lambda item: len(item.parts), reverse=True):
+        try:
+            path.rmdir()
+        except OSError:
+            pass
+
+    return len(redundant_files)
 
 
 def share_markup(article: dict) -> str:
@@ -189,9 +218,13 @@ def normalize_page(article: dict) -> bool:
 def main() -> None:
     articles = load_articles()
     normalize_frontend()
+    removed = remove_redundant_assets()
     resized = sum(normalize_png(article) for article in articles)
     changed = sum(normalize_page(article) for article in articles)
-    print(f"PNG normalizados: {resized}; páginas normalizadas: {changed}")
+    print(
+        f"Archivos redundantes eliminados: {removed}; PNG normalizados: {resized}; "
+        f"páginas normalizadas: {changed}"
+    )
 
 
 if __name__ == "__main__":

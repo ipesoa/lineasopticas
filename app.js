@@ -511,6 +511,12 @@
           El pago se realiza de forma segura a través de Stripe. Líneas Ópticas no recibe ni
           almacena los datos de la tarjeta.
         </p>
+
+        <p class="donation-contact">
+          contacto:
+          <a href="https://www.instagram.com/lineasopticas/"
+            target="_blank" rel="noopener noreferrer">@lineasopticas (Instagram)</a>
+        </p>
       </section>
     `);
   };

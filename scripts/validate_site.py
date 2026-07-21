@@ -87,10 +87,21 @@ def main() -> None:
         fail("El ajuste de titulares no descuenta el relleno lateral del recuadro.")
     if "shareOnDevice" not in app or "https://wa.me/" not in app:
         fail("La portada no conserva compartir cuando falta el menú nativo.")
+    if "https://www.instagram.com/lineasopticas/" not in app:
+        fail("El panel de donación no enlaza el contacto de Instagram.")
 
     share_script = (ROOT / "share.js").read_text(encoding="utf-8")
     if "https://wa.me/" not in share_script:
         fail("Las páginas de noticia no conservan compartir cuando falta el menú nativo.")
+
+    redundant_pngs = list((ROOT / "noticias").rglob("*.png"))
+    if redundant_pngs:
+        fail(
+            f"Hay {len(redundant_pngs)} copias PNG redundantes dentro de noticias/."
+        )
+    legacy_share = ROOT / "share"
+    if legacy_share.exists() and any(path.is_file() for path in legacy_share.rglob("*")):
+        fail("La carpeta share/ antigua todavía contiene archivos sin uso.")
 
     styles = (ROOT / "styles.css").read_text(encoding="utf-8")
     if "SOFISTA_POPUP_V04414" in styles:
@@ -102,6 +113,7 @@ def main() -> None:
         "padding-inline: 2px 1px",
         ".share-panel .share-actions",
         "clamp(56px, 16vw, 68px)",
+        ".donation-contact",
         ".related-news",
     ):
         if required not in styles:
