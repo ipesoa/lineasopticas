@@ -534,6 +534,62 @@
       "status": "published",
       "id": "la-paradoja-de-la-prioridad-nacional",
       "slug": "la-paradoja-de-la-prioridad-nacional"
+    },
+    {
+      "title": "La ética de la eliminación",
+      "seoTitle": "La ética de la eliminación: El PSOE recupera la condena al fiscal.",
+      "summary": "La acusación popular que ejerce el PSOE ha solicitado la reapertura de la causa por presunta revelación de secretos contra Miguel Ángel Rodríguez. La jueza Raquel Robles archivó la investigación sin ni siquiera tomar.",
+      "metaDescription": "La acusación popular que ejerce el PSOE ha solicitado la reapertura de la causa por presunta revelación de secretos contra Miguel Ángel Rodríguez. La jueza.",
+      "content": "La jueza Raquel Robles archivó la investigación contra Miguel Ángel Rodríguez sin tomar declaración a los policías sospechosos de entregar datos de dos periodistas a su entorno, decisión que el PSOE cuestiona al solicitar la reapertura del caso. Los socialistas destacan que Rodríguez y Alberto González Amador admitieron haber borrado la conversación de WhatsApp donde se compartió la foto de los periodistas, argumentando que esta acción revela conciencia de culpa, como había señalado el Tribunal Supremo en un caso anterior contra el fiscal general. Sin embargo, el contexto judicial plantea dudas: si la información provino de una fuente policial, como indican los testimonios no escuchados, el delito de revelación de secretos podría quedar patente, pero si fue obtenida por un ciudadano, como sostienen los acusados, la responsabilidad se diluye. Esta ambigüedad refleja el problema filosófico de interpretar acciones ambiguas en contextos legales, donde el mismo gesto —borrar un mensaje— puede ser visto como un intento de ocultar pruebas o como una medida de protección de la privacidad.\n\nLa teoría de la acción y la ética de la transparencia ofrece una clave para entender este dilema. Para la filosofía del derecho, la intención es un elemento clave en la determinación de la culpabilidad, pero su inferencia a partir de actos concretos es compleja. Borrar un mensaje, por ejemplo, no es un acto unívoco: puede responder a una cultura organizativa de gestión de datos, a una preocupación legítima por la privacidad o, efectivamente, a la voluntad de entorpecer una investigación. El PSOE apunta a una contradicción en los argumentos de Rodríguez, quien había criticado la eliminación de correos por parte del fiscal general como indicio de sospecha, mientras borraba sus propias conversaciones. Esta paradoja ilustra cómo el mismo acto puede ser interpretado de manera opuesta según la narrativa que lo enmarca, lo que cuestiona la objetividad de las señales de culpa. La filosofía de la acción, desde autores como Aristotle o Searle, distingue entre hacer algo y hacerlo *con intención*, pero en el ámbito legal, esa intención debe ser probada, no supuesta.\n\nLa exclusión de los testimonios de los policías agudiza esta tensión entre justicia procesal y justicia sustantiva. Al archivar el caso sin escuchar a los agentes que podrían aclarar el origen de la información, la jueza priorizó el cumplimiento de protocolos sobre la búsqueda de la verdad material. Esta decisión refleja un enfoque formalista, que puede proteger derechos individuales pero también limitar la comprensión completa de los hechos. Desde la perspectiva de Hannah Arendt, la acción humana implica una responsabilidad pública que trasciende lo individual, y ocultar pruebas —o no permitir su revelación— afecta la capacidad colectiva de juzgar con justicia. Sin embargo, la presunción de inocencia exige que las instituciones no asuman la culpabilidad a partir de indicios ambiguos, como la destrucción de registros, sin un contexto que los explique. El caso evidencia así el riesgo de confundir la sospecha con la prueba, especialmente cuando las tecnologías digitales multiplican las posibles interpretaciones de un acto.\n\nLa reflexión filosófica no busca cerrar la pregunta, sino dejarla abierta. Si borrar un mensaje puede ser tanto un acto de culpa como un hábito de privacidad, las instituciones legales deben navegar entre la necesidad de investigar y el derecho a no autoincriminarse, entre la transparencia exigida a los poderosos y la protección de la esfera privada. El lector, al contemplar este caso, no puede evitar cuestionarse: ¿qué queda cuando las acciones se desvinculan de las intenciones? ¿Cómo distinguir entre el miedo a ser juzgado y el legítimo deseo de controlar la propia narrativa digital? La respuesta no es unívoca, pero la pregunta misma revela la complejidad ética de vivir en una sociedad donde hasta el olvido —o su imposibilidad— tiene consecuencias legales.",
+      "publishedAt": "2026-07-21T11:01:05+02:00",
+      "updatedAt": "2026-07-21T11:01:05+02:00",
+      "author": "Líneas Ópticas",
+      "authorType": "Organization",
+      "section": "Cultura",
+      "featured": false,
+      "tags": [
+        "El PSOE recupera la condena al fiscal general para recurrir el archivo a Miguel Ángel Rodríguez: \"Ha borrado mensajes\"",
+        "culture",
+        "pensamiento",
+        "análisis",
+        "cultura"
+      ],
+      "hiddenTags": [
+        "El PSOE recupera la condena al fiscal general para recurrir el archivo a Miguel Ángel Rodríguez: \"Ha borrado mensajes\"",
+        "culture_el_psoe_recupera_la_condena_al_fiscal_general_para_recurrir_el_a_48c3a539",
+        "trabajo",
+        "ES"
+      ],
+      "sources": [
+        {
+          "name": "www.eldiario.es",
+          "url": "https://www.eldiario.es/politica/psoe-recupera-condena-fiscal-general-recurrir-archivo-miguel-angel-rodriguez-borrado-mensajes_1_13392980.html"
+        },
+        {
+          "name": "es.linkedin.com",
+          "url": "https://es.linkedin.com/posts/eldiarioes_última-hora-el-psoe-recupera-la-condena-activity-7485221319089831936-KZZN"
+        },
+        {
+          "name": "www.elplural.com",
+          "url": "https://www.elplural.com/politica/espana/psoe-recurre-archivo-causa-contra-miguel-angel-rodriguez-pide-reabrir-investigacion-difusion-datos-periodistas_396120102"
+        },
+        {
+          "name": "www.msn.com",
+          "url": "https://www.msn.com/es-es/noticias/news/el-psoe-recupera-la-condena-al-fiscal-general-para-recurrir-el-archivo-a-miguel-ángel-rodríguez-ha-borrado-mensajes/ar-AA28lrWg"
+        },
+        {
+          "name": "x.com",
+          "url": "https://x.com/eldiarioes/status/2079454065033912431"
+        },
+        {
+          "name": "www.msn.com",
+          "url": "https://www.msn.com/es-es/noticias/espana/el-psoe-recupera-la-condena-al-fiscal-general-para-recurrir-el-archivo-a-miguel-ángel-rodríguez-ha-borrado-mensajes/ar-AA28lrWg"
+        }
+      ],
+      "language": "es",
+      "status": "published",
+      "id": "la-etica-de-la-eliminacion",
+      "slug": "la-etica-de-la-eliminacion"
     }
   ]
 }
