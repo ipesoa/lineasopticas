@@ -1,0 +1,27 @@
+name: Validar publicación de Sofista
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar soporte PNG
+        run: pip install -r requirements-share.txt
+
+      - name: Validar imágenes, enlaces y estructura responsive
+        run: python scripts/validate_site.py

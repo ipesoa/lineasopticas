@@ -4,6 +4,9 @@ LÍNEAS ÓPTICAS — API PARA LA IA
 El contrato vigente está documentado en:
 ORDENES_IA_GENERADOR_SEO_SVG.txt
 
+La generación de páginas, PNG y validaciones de Sofista está documentada en:
+SOFISTA_FRONTEND_CONTRACT.md
+
 Resumen:
 - La IA envía únicamente JSON o JSONL UTF-8.
 - El token va solo en Authorization: Bearer TU_TOKEN.
@@ -11,4 +14,4 @@ Resumen:
 - Para altas se requieren title, seoTitle, summary, metaDescription, content,
   publishedAt, updatedAt, author, authorType, section, featured, tags,
   hiddenTags, sources, language y status.
-- GitHub Actions crea páginas HTML, sitemap, RSS y SVG automáticamente.
+- Sofista crea páginas HTML, sitemap, RSS y PNG automáticamente.

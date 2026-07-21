@@ -85,8 +85,8 @@
     text.style.transform = "none";
 
     const maximumSize = parseFloat(getComputedStyle(container).fontSize);
-    const minimumSize = window.innerWidth < 740 ? 18 : 22;
-    const safetyMargin = window.innerWidth < 740 ? 24 : 38;
+    const minimumSize = window.innerWidth < 740 ? 10 : 12;
+    const safetyMargin = 2;
     const availableWidth = Math.max(
       1,
       container.clientWidth - safetyMargin
@@ -106,7 +106,15 @@
       }
     }
 
-    text.style.fontSize = `${Math.max(minimumSize, low - 1)}px`;
+    text.style.fontSize = `${Math.max(minimumSize, low - 0.25)}px`;
+
+    // Los titulares excepcionalmente largos siguen ocupando una sola línea.
+    // El escalado horizontal es el último recurso después de agotar el tamaño
+    // de fuente y evita que la tarjeta ensanche la página.
+    const renderedWidth = text.scrollWidth;
+    if (renderedWidth > availableWidth) {
+      text.style.transform = `scaleX(${availableWidth / renderedWidth})`;
+    }
   };
 
   const fitPreview = element => {
@@ -117,7 +125,8 @@
 
     const styles = getComputedStyle(element);
     const lineHeight = parseFloat(styles.lineHeight);
-    const maximumHeight = lineHeight * 8 + 1;
+    const maximumLines = window.innerWidth < 740 ? 6 : 8;
+    const maximumHeight = lineHeight * maximumLines + 1;
     element.style.maxHeight = `${maximumHeight}px`;
 
     if (element.scrollHeight <= maximumHeight + 1) return;
@@ -250,7 +259,26 @@
     `${siteRoot()}${String(config.articlePath || "noticias").replace(/^\/+|\/+$/g, "")}/${encodeURIComponent(article.slug)}/`;
 
   const articleImageUrl = article =>
-    `${siteRoot()}${String(config.imagePath || "media/noticias").replace(/^\/+|\/+$/g, "")}/${encodeURIComponent(article.slug)}.svg`;
+    `${siteRoot()}${String(config.imagePath || "media/noticias").replace(/^\/+|\/+$/g, "")}/${encodeURIComponent(article.slug)}.png`;
+
+  const stableHash = value => {
+    let hash = 2166136261;
+    for (const character of String(value)) {
+      hash ^= character.codePointAt(0);
+      hash = Math.imul(hash, 16777619);
+    }
+    return hash >>> 0;
+  };
+
+  const relatedArticles = article => state.all
+    .filter(candidate => candidate.id !== article.id && candidate.slug !== article.slug)
+    .map(candidate => ({
+      article: candidate,
+      order: stableHash(`${article.slug}:${candidate.slug}`)
+    }))
+    .sort((a, b) => a.order - b.order)
+    .slice(0, 3)
+    .map(entry => entry.article);
 
   const sameOriginHistoryUrl = targetUrl => {
     const target = new URL(targetUrl, window.location.href);
@@ -301,6 +329,7 @@
     const shareUrl = canonicalArticleUrl(article);
     const imageUrl = articleImageUrl(article);
     const shareDescription = cleanPreviewText(article.content).slice(0, 180);
+    const related = relatedArticles(article);
 
     openModal(`
       <article>
@@ -312,11 +341,21 @@
             <button class="share-action" id="nativeShare" type="button">compartir</button>
             <button class="share-image-button" id="imageShare" type="button" aria-label="Compartir ${escapeHtml(article.title)}">
               <img class="share-image" src="${escapeHtml(imageUrl)}" width="1200" height="1200"
+                loading="lazy" decoding="async"
                 alt="Composición tipográfica del titular ${escapeHtml(article.title)}">
             </button>
             <button class="share-action" id="copyLink" type="button">copiar link</button>
           </div>
         </section>
+
+        ${related.length ? `
+          <nav class="related-news" aria-label="Seguir leyendo">
+            ${related.map(item => `
+              <a class="related-news-link" href="${escapeHtml(canonicalArticleUrl(item))}"
+                data-related-id="${escapeHtml(item.id)}">${escapeHtml(item.title)}</a>
+            `).join("")}
+          </nav>
+        ` : ""}
       </article>
     `);
 
@@ -362,6 +401,15 @@
         if (error?.name !== "AbortError") console.error(error);
       }
     }));
+
+    document.querySelectorAll("[data-related-id]").forEach(link => {
+      link.addEventListener("click", event => {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        const relatedArticle = state.all.find(item => item.id === link.dataset.relatedId);
+        if (relatedArticle) openArticle(relatedArticle, true);
+      });
+    });
   };
 
   const openSearch = () => {

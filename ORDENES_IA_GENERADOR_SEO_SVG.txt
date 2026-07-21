@@ -1,6 +1,13 @@
 LÍNEAS ÓPTICAS — CONTRATO DE PUBLICACIÓN, SEO Y GENERADOR SVG
 ===============================================================
 
+NOTA DE COMPATIBILIDAD
+----------------------
+El contrato de datos editoriales de este archivo continúa vigente, pero la
+salida visual SVG ha sido sustituida por PNG cuadrado. La especificación actual
+que Sofista debe cumplir está en SOFISTA_FRONTEND_CONTRACT.md. Ante cualquier
+contradicción sobre imágenes, interfaz o validaciones, prevalece ese archivo.
+
 OBJETIVO
 --------
 El JSON sigue siendo la única fuente de verdad. La IA envía datos estructurados

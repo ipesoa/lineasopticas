@@ -14,6 +14,10 @@ fuente única. Cada push a main compila automáticamente:
 - archivo y páginas de sección;
 - datos estructurados NewsArticle y etiquetas sociales.
 
+La salida actual de Sofista utiliza PNG cuadrados. Consulta
+SOFISTA_FRONTEND_CONTRACT.md para las rutas, la interfaz de compartir y las
+validaciones obligatorias antes de publicar.
+
 
 PORTADA YA COMPILADA
 ---------------------
