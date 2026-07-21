@@ -16,7 +16,7 @@ except ImportError as error:
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE_URL = "https://ipesoa.github.io/lineasopticas/"
-FRONTEND_VERSION = "20260721-2"
+FRONTEND_VERSION = "20260721-3"
 PNG_SIZE = (1200, 1200)
 
 

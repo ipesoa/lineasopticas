@@ -25,10 +25,12 @@ estructura, en este orden:
 3. fila centrada `compartir · miniatura PNG · copiar link`;
 4. tres noticias distintas para seguir leyendo.
 
-`compartir` y la miniatura ejecutan la misma acción nativa. `copiar link` copia
-la URL canónica de la noticia y ofrece un cuadro de copia manual si el navegador
-deniega el portapapeles. Las tres noticias se eligen de forma pseudoaleatoria
-pero estable a partir del slug, para que no cambien en cada recarga.
+`compartir` y la miniatura ejecutan la misma acción nativa. Si el navegador no
+dispone de ella, abren la pantalla de compartir de WhatsApp; nunca sustituyen su
+acción por copiar. Solo `copiar link` copia la URL canónica de la noticia y
+ofrece un cuadro de copia manual si el navegador deniega el portapapeles. Las
+tres noticias se eligen de forma pseudoaleatoria pero estable a partir del slug,
+para que no cambien en cada recarga.
 
 ## Reglas de diseño que Sofista no debe anular
 
@@ -62,7 +64,8 @@ En los tres tamaños debe verificar:
 - cada tarjeta móvil conserva la proporción cuadrada;
 - el rectángulo del titular queda dentro de la tarjeta y ocupa una sola línea;
 - el PNG termina de cargar y tiene `naturalWidth > 0`;
-- compartir, miniatura y copiar enlace permanecen en la misma fila;
+- compartir, miniatura y copiar enlace permanecen centrados en la misma fila;
+- la miniatura mide entre 56 y 68 píxeles en móvil;
 - aparecen exactamente tres enlaces para seguir leyendo.
 
 Solo después de superar estas comprobaciones puede enviar los cambios a GitHub.

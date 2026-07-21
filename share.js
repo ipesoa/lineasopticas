@@ -12,7 +12,7 @@
     }
   };
 
-  const share = async (button, panel) => {
+  const share = async panel => {
     const data = {
       title: panel.dataset.shareTitle || document.title,
       text: panel.dataset.shareText || "",
@@ -20,10 +20,15 @@
     };
 
     try {
-      if (navigator.share) {
+      if (typeof navigator.share === "function") {
         await navigator.share(data);
       } else {
-        await copyUrl(button, data.url);
+        const message = [data.title, data.text, data.url]
+          .filter(Boolean)
+          .join("\n\n");
+        window.location.assign(
+          `https://wa.me/?text=${encodeURIComponent(message)}`
+        );
       }
     } catch (error) {
       if (error?.name !== "AbortError") console.error(error);
@@ -32,7 +37,7 @@
 
   document.querySelectorAll("[data-share-panel]").forEach(panel => {
     panel.querySelectorAll("[data-share]").forEach(button => {
-      button.addEventListener("click", () => share(button, panel));
+      button.addEventListener("click", () => share(panel));
     });
 
     panel.querySelectorAll("[data-copy]").forEach(button => {

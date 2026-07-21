@@ -77,6 +77,18 @@
     .replace(/\s+/g, " ")
     .trim();
 
+  const shareOnDevice = async data => {
+    if (typeof navigator.share === "function") {
+      await navigator.share(data);
+      return;
+    }
+
+    const message = [data.title, data.text, data.url]
+      .filter(Boolean)
+      .join("\n\n");
+    window.location.assign(`https://wa.me/?text=${encodeURIComponent(message)}`);
+  };
+
   const fitTitle = container => {
     const text = container.querySelector(".card-title-text");
     if (!text) return;
@@ -392,15 +404,11 @@
 
     shareButtons.forEach(button => button.addEventListener("click", async () => {
       try {
-        if (navigator.share) {
-          await navigator.share({
-            title: article.title,
-            text: shareDescription,
-            url: shareUrl
-          });
-        } else {
-          await copyLink(document.querySelector("#nativeShare"));
-        }
+        await shareOnDevice({
+          title: article.title,
+          text: shareDescription,
+          url: shareUrl
+        });
       } catch (error) {
         if (error?.name !== "AbortError") console.error(error);
       }

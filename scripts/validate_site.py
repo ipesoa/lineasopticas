@@ -85,6 +85,12 @@ def main() -> None:
 
     if "container.clientWidth - horizontalPadding - safetyMargin" not in app:
         fail("El ajuste de titulares no descuenta el relleno lateral del recuadro.")
+    if "shareOnDevice" not in app or "https://wa.me/" not in app:
+        fail("La portada no conserva compartir cuando falta el menú nativo.")
+
+    share_script = (ROOT / "share.js").read_text(encoding="utf-8")
+    if "https://wa.me/" not in share_script:
+        fail("Las páginas de noticia no conservan compartir cuando falta el menú nativo.")
 
     styles = (ROOT / "styles.css").read_text(encoding="utf-8")
     if "SOFISTA_POPUP_V04414" in styles:
@@ -94,6 +100,8 @@ def main() -> None:
         "aspect-ratio: 1 / 1",
         "overflow-x: clip",
         "padding-inline: 2px 1px",
+        ".share-panel .share-actions",
+        "clamp(56px, 16vw, 68px)",
         ".related-news",
     ):
         if required not in styles:
