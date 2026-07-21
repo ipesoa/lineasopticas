@@ -84,12 +84,16 @@
     text.style.fontSize = "";
     text.style.transform = "none";
 
-    const maximumSize = parseFloat(getComputedStyle(container).fontSize);
+    const containerStyles = getComputedStyle(container);
+    const maximumSize = parseFloat(containerStyles.fontSize);
     const minimumSize = window.innerWidth < 740 ? 10 : 12;
     const safetyMargin = 2;
+    const horizontalPadding =
+      parseFloat(containerStyles.paddingLeft) +
+      parseFloat(containerStyles.paddingRight);
     const availableWidth = Math.max(
       1,
-      container.clientWidth - safetyMargin
+      container.clientWidth - horizontalPadding - safetyMargin
     );
 
     let low = minimumSize;

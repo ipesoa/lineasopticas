@@ -83,6 +83,9 @@ def main() -> None:
     if re.search(r"articleImageUrl[\s\S]{0,250}\.svg", app):
         fail("app.js todavía contiene una referencia SVG para la imagen de la noticia.")
 
+    if "container.clientWidth - horizontalPadding - safetyMargin" not in app:
+        fail("El ajuste de titulares no descuenta el relleno lateral del recuadro.")
+
     styles = (ROOT / "styles.css").read_text(encoding="utf-8")
     if "SOFISTA_POPUP_V04414" in styles:
         fail("Sigue presente el bloque antiguo de Sofista que rompe el diseño.")
@@ -90,6 +93,7 @@ def main() -> None:
         "@media (max-width: 739px)",
         "aspect-ratio: 1 / 1",
         "overflow-x: clip",
+        "padding-inline: 2px 1px",
         ".related-news",
     ):
         if required not in styles:

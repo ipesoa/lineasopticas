@@ -16,12 +16,70 @@ except ImportError as error:
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE_URL = "https://ipesoa.github.io/lineasopticas/"
-FRONTEND_VERSION = "20260721-1"
+FRONTEND_VERSION = "20260721-2"
 PNG_SIZE = (1200, 1200)
 
 
 def clean(value: object) -> str:
     return re.sub(r"\s+", " ", str(value or "")).strip()
+
+
+def write_preserving_line_endings(path: Path, raw: str, normalized: str) -> bool:
+    line_ending = "\r\n" if "\r\n" in raw else "\n"
+    serialized = normalized.replace("\n", line_ending)
+    if serialized == raw:
+        return False
+    path.write_bytes(serialized.encode("utf-8"))
+    return True
+
+
+def normalize_frontend() -> int:
+    changed = 0
+
+    homepage_path = ROOT / "index.html"
+    raw_homepage = homepage_path.read_bytes().decode("utf-8")
+    homepage = raw_homepage.replace("\r\n", "\n")
+    homepage = re.sub(
+        r'\s*<style id="sofista-home-title-fix">.*?</style>\s*',
+        "\n",
+        homepage,
+        flags=re.DOTALL,
+    )
+    homepage = re.sub(
+        r'(\./styles\.css)(?:\?v=[^"\s]+)?',
+        rf'\1?v={FRONTEND_VERSION}',
+        homepage,
+    )
+    homepage = re.sub(
+        r'(\./app\.js)(?:\?v=[^"\s]+)?',
+        rf'\1?v={FRONTEND_VERSION}',
+        homepage,
+    )
+    version_meta = (
+        f'<meta name="sofista-frontend-version" content="{FRONTEND_VERSION}">'
+    )
+    if 'name="sofista-frontend-version"' in homepage:
+        homepage = re.sub(
+            r'<meta name="sofista-frontend-version" content="[^"]*">',
+            version_meta,
+            homepage,
+        )
+    else:
+        homepage = homepage.replace("</head>", f"{version_meta}\n</head>", 1)
+    changed += write_preserving_line_endings(homepage_path, raw_homepage, homepage)
+
+    styles_path = ROOT / "styles.css"
+    raw_styles = styles_path.read_bytes().decode("utf-8")
+    styles = raw_styles.replace("\r\n", "\n")
+    styles = re.sub(
+        r'\n*/\* SOFISTA_POPUP_V\d+ \*/.*\Z',
+        "\n",
+        styles,
+        flags=re.DOTALL,
+    )
+    changed += write_preserving_line_endings(styles_path, raw_styles, styles)
+
+    return changed
 
 
 def load_articles() -> list[dict]:
@@ -130,6 +188,7 @@ def normalize_page(article: dict) -> bool:
 
 def main() -> None:
     articles = load_articles()
+    normalize_frontend()
     resized = sum(normalize_png(article) for article in articles)
     changed = sum(normalize_page(article) for article in articles)
     print(f"PNG normalizados: {resized}; páginas normalizadas: {changed}")
